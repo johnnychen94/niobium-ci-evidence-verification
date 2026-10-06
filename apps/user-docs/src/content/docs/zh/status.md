@@ -21,7 +21,7 @@ Niobium 0.1 是一个用来证明模型可行的纵向切片，尚不能用于�
 
 所有 `PASS` 条目都来自在 macOS arm64 主机上运行的 `zig build verify`；端到端测试套件也在 Debian bookworm arm64 容器中通过。目前还没有在真实的 Windows 机器或完整的 Linux 桌面上验证过任何内容。
 
-构建目标是 `x86_64-windows`、`aarch64-macos` 和 `x86_64-linux`，另有用于虚拟机测试的 `aarch64-linux`。所有目标都能交叉编译并通过二进制检查，三个发布目标的 `setup` 都小于 30 MiB（N1-AC-15 到 N1-AC-17：`PASS`）。能为某个平台编译，并不等于已在该平台上验证。
+构建目标是 `x86_64-windows`、`aarch64-macos` 和 `x86_64-linux`，另有用于虚拟机测试的 `aarch64-linux`；它们的支持层级和参考操作系统见[平台支持](/zh/platforms/)。所有目标都能交叉编译并通过二进制检查，三个发布目标的 `setup` 都小于 30 MiB（N1-AC-15 到 N1-AC-17：`PASS`）。能为某个平台编译，并不等于已在该平台上验证。
 
 ## 用户旅程
 
@@ -66,7 +66,7 @@ N1-UJ-02 被阻塞的原因与下面的真实系统冒烟测试相同，另外�
 | 屏幕阅读器桥接（UI Automation、NSAccessibility、AT-SPI） | `DEFERRED` |
 | Linux 上的原生文件夹选择器 | `DEFERRED` |
 
-真实系统冒烟测试被阻塞，是因为上次运行测试套件时测试虚拟机没有在运行。
+真实系统冒烟测试被阻塞，是因为上次运行测试套件时测试虚拟机没有在运行。每个平台承诺了什么、还缺哪些测试通道，见[平台支持](/zh/platforms/)。
 
 ## 推迟的功能
 

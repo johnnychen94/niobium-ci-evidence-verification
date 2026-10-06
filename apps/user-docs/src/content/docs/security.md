@@ -70,4 +70,4 @@ After an interruption at any point, the next run of `setup` recovers to the old 
 <!-- TODO(maintainers): publish a security policy (SECURITY.md or a section here) with a private
 reporting channel, for example GitHub private vulnerability reporting, then replace this paragraph. -->
 
-Niobium has not published a security policy or a private reporting channel yet. Until it does, do not put vulnerability details in a public issue: open an issue on [GitHub](https://github.com/niobium-project/niobium/issues) that asks the maintainers for a private contact, without describing the problem.
+Niobium has not published a security policy or a private reporting channel yet. Until it does, do not put vulnerability details in a public issue: open an issue on [GitHub](https://github.com/niobium-project/niobium/issues) that asks the maintainers for a private contact, without describing the problem. Reports are handled by one maintainer on a best-effort basis ([About the project](/about/)).

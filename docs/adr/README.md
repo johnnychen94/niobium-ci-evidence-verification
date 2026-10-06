@@ -16,5 +16,6 @@ Numbers are assigned once and never reused; a replacement is declared by a new A
 | [0010](0010-x11-now-wayland-deferred.md) | X11 on Linux first, Wayland deferred | Accepted |
 | [0011](0011-third-party-fetch.md) | Versioned third-party fetch and patches | Accepted |
 | [0012](0012-formal-methods-deferred.md) | Formal models deferred | Accepted |
+| [0014](0014-tier-based-platform-support.md) | Tier-based platform support | Accepted |
 | [0015](0015-node-toolchain-for-user-docs.md) | Node.js toolchain for the user documentation site | Accepted; amended by 0017 |
 | [0017](0017-chinese-user-documentation.md) | Chinese user documentation | Accepted |

@@ -1,10 +1,12 @@
 //! Docs lint (zig build check-docs): relative links resolve, ADR fields, acceptance IDs, spec
-//! filenames carry a version, docs are English, and URLs only name public allowed hosts.
+//! filenames carry a version, docs are English, URLs only name public allowed hosts, and every
+//! build target has a tier on the Platform support page.
 
 const std = @import("std");
 const repo = @import("repo");
 const links = @import("links.zig");
 const locales = @import("locales.zig");
+const targets = @import("targets.zig");
 
 pub const acceptance_path = "docs/acceptance-plan-v0.1.md";
 
@@ -51,6 +53,7 @@ pub fn main(init: std.process.Init) !void {
         }
     }
     try checkAcceptance(&report, io, files);
+    try checkPlatforms(&report, io);
     try report.finish(io);
 }
 
@@ -74,6 +77,23 @@ fn checkLanguage(
         try report.add("{s}: Chinese page has no English page at {s}", .{ path, other });
     } else {
         try report.add("{s}: English page has no Chinese translation at {s}", .{ path, other });
+    }
+}
+
+/// Every build target has a tier on the Platform support page (ADR-0014).
+fn checkPlatforms(report: *repo.Report, io: std.Io) !void {
+    const source = try repo.read(report.arena, io, targets.targets_path);
+    const page = try repo.read(report.arena, io, targets.platforms_page);
+    switch (targets.check(source, page)) {
+        .ok => {},
+        .no_targets => try report.add("{s}: no `.name = \"...\"` target found", .{
+            targets.targets_path,
+        }),
+        .missing => |name| try report.add("{s}: target `{s}` from {s} has no tier", .{
+            targets.platforms_page,
+            name,
+            targets.targets_path,
+        }),
     }
 }
 
@@ -316,6 +336,7 @@ test "only allowed url hosts" {
 test {
     _ = links;
     _ = locales;
+    _ = targets;
 }
 
 test "the user documentation site host is allowed" {

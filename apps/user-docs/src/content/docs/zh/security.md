@@ -69,4 +69,4 @@ Niobium 的设计目标是：被攻陷的下载服务器、被篡改或重放的
 
 <!-- TODO(maintainers): keep in sync with the English page once a security policy is published. -->
 
-Niobium 尚未发布安全策略或私密报告渠道。在此之前，请不要把漏洞细节写进公开 issue：在 [GitHub](https://github.com/niobium-project/niobium/issues) 上开一个 issue，请维护者提供私密联系方式，但不要描述问题本身。
+Niobium 尚未发布安全策略或私密报告渠道。在此之前，请不要把漏洞细节写进公开 issue：在 [GitHub](https://github.com/niobium-project/niobium/issues) 上开一个 issue，请维护者提供私密联系方式，但不要描述问题本身。报告由一位维护者尽力处理（[关于本项目](/zh/about/)）。

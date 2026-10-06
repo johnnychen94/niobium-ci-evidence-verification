@@ -80,7 +80,9 @@ export default defineConfig({
         },
         'security',
         'status',
+        'platforms',
         'troubleshooting',
+        'about',
         {
           ...label('niobium.sidebar.reference'),
           items: [

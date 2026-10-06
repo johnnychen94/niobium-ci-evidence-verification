@@ -6,7 +6,7 @@ Goal: prove that **native GUI ≤ 30 MiB + transactional engine + no-script comp
 
 | Area | v0.1 |
 |---|---|
-| Target platforms | `x86_64-windows`, `aarch64-macos`, `x86_64-linux` (plus `aarch64-linux` built for VM smoke) |
+| Target platforms | `x86_64-windows`, `aarch64-macos`, `x86_64-linux` (plus `aarch64-linux` built for VM smoke); tiers per [ADR-0014](adr/0014-tier-based-platform-support.md), current assignment on [Platform support](../apps/user-docs/src/content/docs/platforms.md) |
 | Scope | user + machine |
 | Capability | ManagedFiles, Directory, Shortcut, FileAssociation, Service, ApplicationRegistration |
 | Frontends | GUI (Welcome, Options, Progress, Error, Complete) + CLI + C ABI |
@@ -36,3 +36,6 @@ Goal: prove that **native GUI ≤ 30 MiB + transactional engine + no-script comp
 | Item | Record |
 |---|---|
 | third_party mirror: host the upstream files from `deps.zon` on a self-hosted mirror so a first build no longer depends on GitHub / jsDelivr | [ADR-0011](adr/0011-third-party-fetch.md) |
+| Tier 1 evidence lanes: an x86_64 Ubuntu 24.04 guest, native x64 Windows 11, machine-scope smoke | [ADR-0014](adr/0014-tier-based-platform-support.md), [vm-smoke](runbooks/vm-smoke.md) |
+| Pin the minimum macOS version for `aarch64-macos` | [ADR-0014](adr/0014-tier-based-platform-support.md) |
+| Publish a security policy with a private reporting channel | [Security](../apps/user-docs/src/content/docs/security.md) |

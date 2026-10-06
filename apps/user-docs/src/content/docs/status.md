@@ -21,7 +21,7 @@ The source of truth is the repository's [acceptance plan](https://github.com/nio
 
 All `PASS` entries come from `zig build verify` on a macOS arm64 host; the end-to-end suite also passes in a Debian bookworm arm64 container. Nothing has been verified yet on a real Windows machine or a full Linux desktop.
 
-Build targets are `x86_64-windows`, `aarch64-macos` and `x86_64-linux`, plus `aarch64-linux` for VM tests. All of them cross-compile and pass the binary checks, and the three shipping targets keep `setup` under 30 MiB (N1-AC-15 to N1-AC-17: `PASS`). Compiling for a platform is not the same as having verified it there.
+Build targets are `x86_64-windows`, `aarch64-macos` and `x86_64-linux`, plus `aarch64-linux` for VM tests; their support tiers and reference operating systems are on [Platform support](/platforms/). All of them cross-compile and pass the binary checks, and the three shipping targets keep `setup` under 30 MiB (N1-AC-15 to N1-AC-17: `PASS`). Compiling for a platform is not the same as having verified it there.
 
 ## User journeys
 
@@ -66,7 +66,7 @@ These run on the build host against a test platform with injected faults and aga
 | Screen-reader bridges (UI Automation, NSAccessibility, AT-SPI) | `DEFERRED` |
 | Native folder picker on Linux | `DEFERRED` |
 
-The real-OS smoke tests are blocked because the test virtual machines were not running when the suite last ran.
+The real-OS smoke tests are blocked because the test virtual machines were not running when the suite last ran. What each platform is committed to, and which test lanes are still missing, is on [Platform support](/platforms/).
 
 ## Deferred features
 

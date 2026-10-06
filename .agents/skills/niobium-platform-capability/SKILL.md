@@ -14,6 +14,8 @@ description: Use when adding or changing a Niobium OS capability (shortcuts, fil
 5. If elevation is needed: add it to the `ipc-v1` op enum, keep broker and helper in sync, and add negative tests for unknown op / wrong nonce / out-of-bounds path.
 6. The planner generates the corresponding op; the executor runs it and writes undo; transaction rollback calls undo.
 
+A new platform backend or target enters at Tier 3 and is promoted only under [ADR-0014](../../../docs/adr/0014-tier-based-platform-support.md).
+
 ## Platform pitfalls
 
 **Windows**

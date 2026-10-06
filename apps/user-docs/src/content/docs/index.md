@@ -37,7 +37,8 @@ Niobium does not fit when:
 
 - you need install-time scripts or custom actions: the framework rejects them by design;
 - you need a capability outside its closed set (shortcuts, file associations, services, application registration, managed files);
-- you need a production-ready installer today: real-OS verification on Windows and Linux, machine-wide installs and OS code signing are not done yet ([Status and platforms](/status/)).
+- you need a production-ready installer today: real-OS verification on Windows and Linux, machine-wide installs and OS code signing are not done yet ([Status and platforms](/status/));
+- you need a platform outside the short [supported list](/platforms/), or a support commitment: Niobium is a hobby project maintained on a best-effort basis ([About the project](/about/)).
 
 ## What each section is for
 
@@ -48,7 +49,9 @@ Niobium does not fit when:
 | [Guides](/guides/package/) | Do one task: package, sign, publish, implement App Bootstrap, embed, install silently |
 | [Security](/security/) | Learn what Niobium defends against, what it does not, and how to report a problem |
 | [Status and platforms](/status/) | Check what has been verified, on which platform, with which result |
+| [Platform support](/platforms/) | See which platforms are targeted, at which support tier, and what comes next |
 | [Troubleshooting](/troubleshooting/) | Map an exit code or failure to its cause, and find logs |
+| [About the project](/about/) | Learn why Niobium exists, who maintains it, and what support to expect |
 | [Reference](/reference/manifest/) | Look up fields, commands, exit codes, events and the C ABI |
 
 The source, specifications and issue tracker are on [GitHub](https://github.com/niobium-project/niobium).

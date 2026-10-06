@@ -2,7 +2,7 @@
 
 - **Status:** Baseline
 
-Every platform backend (`libs/platform/{virtual,macos,windows,linux}`) implements `platform.api.Capabilities` and must pass the PlatformContract suite in `libs/conformance` before it can enter the supported list. "It compiles" does not mean it is supported.
+Every platform backend (`libs/platform/{virtual,macos,windows,linux}`) implements `platform.api.Capabilities` and must pass the PlatformContract suite in `libs/conformance` before its target can be promoted above Tier 3 ([ADR-0014](../adr/0014-tier-based-platform-support.md)). "It compiles" does not mean it is supported.
 
 ## Capabilities
 

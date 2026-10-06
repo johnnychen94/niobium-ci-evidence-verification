@@ -9,7 +9,7 @@ Current explicit user instruction > this file > accepted ADRs > versioned specs 
 - `docs/source/` is the original architecture input, a read-only archive; current decisions are the ADRs and specs.
 - `docs/implementation/YYYY-MM-DD-*.md` are implementation traces; they go stale and are not a source of truth.
 - Docs, skills, code comments and commit summaries are written in English. The only Chinese documents are [README.zh.md](README.zh.md), which must track [README.md](README.md), and the user site's Chinese pages, which mirror its English pages ([ADR-0017](docs/adr/0017-chinese-user-documentation.md)). APIs, code identifiers and JSON fields are English.
-- The repository is public. It must not reference internal or private hosts, mirrors or organizations; `tools/check-docs` enforces part of this.
+- The repository is public. It must not reference internal or private hosts, mirrors or internal organization namespaces (groups, repositories); `tools/check-docs` enforces part of this. Naming the author's employer in the project background ([About the project](apps/user-docs/src/content/docs/about.md)) is allowed.
 
 ## 2. Inviolable principles
 
@@ -52,7 +52,7 @@ A module may only `@import` the modules `build/modules.zig` hands it, which the 
 2. For any design, implementation, debugging or acceptance work: read [.agents/skills/niobium-development/SKILL.md](.agents/skills/niobium-development/SKILL.md).
 3. For writing or changing Zig code: read the `zig-0.17` and `zig-tiger-style` skills (under `.agents/skills/`); this repository's deviations are in section 5.
 4. For installer UI, tokens, components and screens: read [niobium-ui-kit](.agents/skills/niobium-ui-kit/SKILL.md) and [niobium-native-look](.agents/skills/niobium-native-look/SKILL.md).
-5. For a new OS capability or platform backend: read [niobium-platform-capability](.agents/skills/niobium-platform-capability/SKILL.md).
+5. For a new OS capability or platform backend: read [niobium-platform-capability](.agents/skills/niobium-platform-capability/SKILL.md). Which targets the project builds, gates and releases on is decided by the tiers in [ADR-0014](docs/adr/0014-tier-based-platform-support.md).
 6. For review, security or boundary-related changes: review against the [review-niobium](.agents/skills/review-niobium/SKILL.md) checklist.
 7. External GUI skills (`apple-hig`, `winui-app`, `gtk-ui-ux-engineer`) only provide design values and checklists; the SwiftUI/AppKit controls, WinUI 3/XAML/C#/MSIX and GTK/libadwaita they recommend do not change [ADR-0008](docs/adr/0008-shared-software-renderer.md).
 
