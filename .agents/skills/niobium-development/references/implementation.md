@@ -29,6 +29,13 @@ The libc hooks for `stb_truetype` are `export`ed by `bindings.zig`. Any artifact
 - Each module defines its own error set; `engine` merges them, and `core.exit_code.fromError` maps them to the `cli-v1` table. A new error must appear in the mapping, otherwise compilation fails (exhaustive switch).
 - C ABI: `nb_status` = `-exit_code`.
 
+## Phases and side effects
+
+- `Prepare` downloads, verifies through TUF, and unpacks into staging before `Execute` starts.
+- `Execute` writes only `versions/<seq>` and never touches `current`; `Commit` is the pointer swap ([ADR-0006](../../../../docs/adr/0006-transaction-and-pointer-swap-commit.md)).
+- The privilege helper lives inside one transaction. When it is lost, the transaction aborts and recovery takes over ([ADR-0007](../../../../docs/adr/0007-same-binary-privilege-helper.md)).
+- Work that can outlive its caller (helper, download, App Bootstrap) has an owner, a bound from `contracts.Limits`, and an outcome that is journaled or reported.
+
 ## Platform code
 
 - OS APIs and `@ptrCast` appear only in `libs/platform/<os>/` and `libs/ui/backend/<os>/`.

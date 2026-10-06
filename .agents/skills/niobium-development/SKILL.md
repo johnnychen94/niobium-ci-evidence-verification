@@ -1,17 +1,30 @@
 ---
 name: niobium-development
-description: The main work loop for the Niobium installer framework - design → contract → implement → verify → deliver. Read this skill first for any design, implementation, debugging, acceptance, or documentation change; it turns the constraints in AGENTS.md into executable steps and links to the detailed rules and anti-pattern table in references/.
+description: The main work loop for the Niobium installer framework - design → contract → implement → verify → deliver. Read this skill first for any design, implementation, debugging, bug fix, acceptance, or documentation change, including work on the journal, crash recovery, the privilege helper, or acceptance IDs; it turns the constraints in AGENTS.md into executable steps and links to the detailed rules and anti-pattern table in references/.
 ---
 
 # Niobium development main loop
 
 AGENTS.md holds the constraints; this skill holds the steps. When the two conflict, AGENTS.md wins, and this skill must be corrected.
 
+| Task | Read |
+|---|---|
+| Design, architecture change, bug root cause | [references/design-and-debugging.md](references/design-and-debugging.md) |
+| Writing Zig code | [references/implementation.md](references/implementation.md), plus the `zig-0.17` and `zig-tiger-style` skills |
+| Tests, acceptance status, evidence | [references/acceptance.md](references/acceptance.md) |
+| New or replaced ADR, spec, roadmap, or other doc change | [docs-management](../../../docs/development/docs-management.md) |
+| Risk scan before design, fix, or review | [references/anti-patterns.md](references/anti-patterns.md), only the rows that apply |
+| UI, platform capability, security review | The sibling skill listed in AGENTS.md section 4 |
+
 ## 0. Orient
 
 1. Identify the layer the task touches: `core` / `contracts` / `platform` / service (manifest, trust, repository, package, executor) / flow (resolver, planner, transaction, privilege, bootstrap, portable) / `engine` / UI / apps / tools.
 2. Read `build/modules.zig` to confirm the allowed import directions. If you need a new dependency, change it there first and state it in the PR description; `tools/check` rejects undeclared edges.
 3. Find the affected spec (`docs/spec/*-v1.md`) and ADRs. Changing a wire format = changing the spec + schema + tests, all three in the same commit.
+4. Name the user-visible result and the acceptance ID it maps to. Do not re-ask choices that accepted ADRs or AGENTS.md already settle.
+5. A docs, skill, or tooling change with no product case does not invent an `N1-UJ` or `N1-INV` row and does not claim a product PASS; its gate is `N1-AC-20` in `docs/acceptance-plan-v0.1.md`.
+
+Bug fixes follow the same loop: before patching, record the trigger sequence and the contract it breaks.
 
 ## 1. Design
 
@@ -52,6 +65,9 @@ Put the acceptance ID at the start of the test name (`test "N1-INV-03: ..."`) an
 
 - Commit: `<type>(<scope>): English summary`, ≤ 300 net lines; `zig build check-commits`.
 - The final report lists: commands actually run and their results, items not run and why, known limitations. Do not write "passed" without evidence.
+- Keep the author's claim, tool evidence, and independent review apart. A review or a reading of the diff does not replace a command that ran.
+- On a dirty tree, name what was tested, not only `HEAD`.
+- If README or user-facing behaviour changed, update `README.zh.md` (AGENTS.md section 1) and the matching page in `apps/user-docs`.
 
 ## Anti-patterns
 

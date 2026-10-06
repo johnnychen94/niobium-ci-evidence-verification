@@ -43,3 +43,6 @@ Answer each item "yes/no/not applicable"; every "no" must come with a fix or a j
 - [ ] No new import edges outside `build/modules.zig`.
 - [ ] No new `lint-allow`, or each one has a specific reason.
 - [ ] Test names carry acceptance IDs; acceptance table statuses have evidence.
+- [ ] Logs and crash records contain no tokens, raw signed URLs, or archive bytes.
+- [ ] No new queue, retry, or read without an upper bound (AGENTS.md section 5).
+- [ ] Generated outputs are in sync with their inputs and were not edited by hand.

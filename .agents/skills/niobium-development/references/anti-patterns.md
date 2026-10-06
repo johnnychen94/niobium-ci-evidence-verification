@@ -17,3 +17,10 @@
 | Using `std.heap.page_allocator` in `libs/` | Allocators replaceable and testable | Pass an `Allocator` explicitly | `tools/lint no-page-allocator` |
 | Sleeping to wait for async results | Test determinism | barrier / failpoint / controllable clock | `tools/lint no-sleep-in-tests` |
 | `@intCast` on lengths read from files | Out-of-bounds panic | `std.math.cast` and return an error | `tools/lint parser-int-cast` |
+| A missing field or swallowed error is reported as success | Facts are explainable | Distinguish absent, valid default, and failure per the contract | Negative contract test for each case |
+| UI or local state shows "installed" before the engine confirms | Single owner of install state | UI shows pending until the engine reports the journaled result | UAC-cancel and `PrivilegeHelperLost` scenarios |
+| Unknown helper or download outcome followed by a blind retry | Transactionality; no duplicate effect | Recover from the journal, then start a new transaction | sim kill point at that op |
+| Bug closed with an extra retry or guard | Root cause fixed | Fix the first contract deviation (design-and-debugging.md) | Regression on the original trigger sequence |
+| Test counts mock calls or reads a test-only getter | Tests protect behaviour | Assert public results, journal records, and exit codes | The test fails when the behaviour is removed |
+| L1 VirtualPlatform pass reported as an L5 OS pass | Evidence matches what ran | Record the lane; L5 stays `BLOCKED` or `NOT_RUN` without a VM | Coverage column of the acceptance row (`vm-smoke`) |
+| Crash JSON or log line treated as proof of commit | Journal is the install fact | Read the journal and the `current` pointer | Recovery test from the same kill point |
