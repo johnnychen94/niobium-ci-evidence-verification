@@ -11,6 +11,7 @@
 | Platform tiers: maintainer obligations; current tiers and platform roadmap (user site) | [ADR-0014](adr/0014-tier-based-platform-support.md), [Platform support](../apps/user-docs/src/content/docs/platforms.md) |
 | Acceptance IDs and actual status | [acceptance-plan-v0.1](acceptance-plan-v0.1.md) |
 | Decision records | [adr/README.md](adr/README.md) |
+| How each document kind changes and retires; replacing an ADR | [docs-management](development/docs-management.md) |
 | Architecture overview and module boundaries | [overview](architecture/overview.md), [module-boundaries](architecture/module-boundaries.md) |
 | Transactions, commit and recovery | [transaction-model](architecture/transaction-model.md) |
 | UI engine | [ui-engine](architecture/ui-engine.md) |
@@ -38,4 +39,4 @@
 
 ## Status vocabulary
 
-`PASS`, `FAIL`, `BLOCKED`, `NOT_RUN`, `DEFERRED`. Without actual evidence, do not use "supported", "passed" or "production-ready". Implementation traces go in `implementation/YYYY-MM-DD-<topic>.md`; they go stale and are not the source of truth.
+`PASS`, `FAIL`, `BLOCKED`, `NOT_RUN`, `DEFERRED`. Without actual evidence, do not use "supported", "passed" or "production-ready". Implementation traces are optional, for large multi-commit changes only, and go in `implementation/YYYY-MM-DD-<topic>.md`; they go stale and are not the source of truth.

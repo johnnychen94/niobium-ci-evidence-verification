@@ -7,7 +7,8 @@ Niobium is a native, declarative, transactional installation and distribution fr
 Current explicit user instruction > this file > accepted ADRs > versioned specs (`docs/spec/*-v1.md`) > architecture baseline (`docs/source/`) > general engineering practice. When you find a conflict, pause the affected change and record the conflict and a proposed ADR first; never change architectural semantics silently through code.
 
 - `docs/source/` is the original architecture input, a read-only archive; current decisions are the ADRs and specs.
-- `docs/implementation/YYYY-MM-DD-*.md` are implementation traces; they go stale and are not a source of truth.
+- `docs/implementation/YYYY-MM-DD-*.md` are optional implementation traces; they go stale and are not a source of truth.
+- How each document kind changes and retires, including replacing an ADR: [docs-management](docs/development/docs-management.md) ([ADR-0016](docs/adr/0016-documentation-lifecycle.md)).
 - Docs, skills, code comments and commit summaries are written in English. The only Chinese documents are [README.zh.md](README.zh.md), which must track [README.md](README.md), and the user site's Chinese pages, which mirror its English pages ([ADR-0017](docs/adr/0017-chinese-user-documentation.md)). APIs, code identifiers and JSON fields are English.
 - The repository is public. It must not reference internal or private hosts, mirrors or internal organization namespaces (groups, repositories); `tools/check-docs` enforces part of this. Naming the author's employer in the project background ([About the project](apps/user-docs/src/content/docs/about.md)) is allowed.
 

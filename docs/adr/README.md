@@ -1,6 +1,6 @@
 # ADR index
 
-Numbers are assigned once and never reused; a replacement is declared by a new ADR. Template: title `# ADR-NNNN: ...`, fields **Status** and **Date**, sections `Context` -> `Decision` -> `Consequences`.
+Numbers are assigned once and never reused or renumbered. Template: title `# ADR-NNNN: ...`, fields **Status** and **Date** (plus `Supersedes` / `Superseded by` / `Amends` / `Amended by` when they apply), sections `Context` -> `Decision` -> `Consequences`. Statuses, and how to replace or amend a decision: [docs-management](../development/docs-management.md#adrs).
 
 | Number | Title | Status |
 |---|---|---|
@@ -16,6 +16,8 @@ Numbers are assigned once and never reused; a replacement is declared by a new A
 | [0010](0010-x11-now-wayland-deferred.md) | X11 on Linux first, Wayland deferred | Accepted |
 | [0011](0011-third-party-fetch.md) | Versioned third-party fetch and patches | Accepted |
 | [0012](0012-formal-methods-deferred.md) | Formal models deferred | Accepted |
+| 0013 | Not assigned: merged into 0011 before the first public commit | - |
 | [0014](0014-tier-based-platform-support.md) | Tier-based platform support | Accepted |
 | [0015](0015-node-toolchain-for-user-docs.md) | Node.js toolchain for the user documentation site | Accepted; amended by 0017 |
+| [0016](0016-documentation-lifecycle.md) | Documentation lifecycle | Accepted |
 | [0017](0017-chinese-user-documentation.md) | Chinese user documentation | Accepted |
