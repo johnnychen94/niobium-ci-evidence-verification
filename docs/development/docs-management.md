@@ -58,6 +58,8 @@ Specs are edited in place; git history is the record of earlier text. The `-vN` 
 
 `docs/` is for Niobium maintainers; `apps/user-docs` is for people who build installers with Niobium ([ADR-0015](../adr/0015-node-toolchain-for-user-docs.md)). When both need the same topic, one owns the content and the other links to it, as [ADR-0014](../adr/0014-tier-based-platform-support.md) does for platform tiers: the ADR holds the obligations, the user site holds the current assignment. `README.zh.md` tracks `README.md` (AGENTS.md section 1), and the site's Chinese pages track its English pages ([ADR-0017](../adr/0017-chinese-user-documentation.md)).
 
+The feature roadmap follows the same split. The user site's [Roadmap](../../apps/user-docs/src/content/docs/roadmap.md) page owns the single feature table: the wording of each feature and its status mark (✅ available, 🚧 now, 🔜 next, 🗓️ later, ⛔ not planned). The current `roadmap-v0.x.md` maps each item to its work and records. Both READMEs carry the same table with the status and feature name only. A feature changes status on the Roadmap page, in both READMEs and in `roadmap-v0.x.md` in the same commit. When a feature ships, its mark becomes ✅ and its acceptance entries appear on [Status and platforms](../../apps/user-docs/src/content/docs/status.md).
+
 ## Cleanup pass
 
 Run when a phase closes or before a release. It is a checklist, not a gate.

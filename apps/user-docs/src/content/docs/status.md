@@ -15,7 +15,7 @@ Statuses use five values only:
 | `NOT_RUN` | Can run, has not been run |
 | `DEFERRED` | Deliberately out of scope for this version |
 
-The source of truth is the repository's [acceptance plan](https://github.com/niobium-project/niobium/blob/main/docs/acceptance-plan-v0.1.md) and [roadmap](https://github.com/niobium-project/niobium/blob/main/docs/roadmap-v0.1.md); if this page and those disagree, they are right.
+The source of truth is the repository's [acceptance plan](https://github.com/niobium-project/niobium/blob/main/docs/acceptance-plan-v0.1.md) and [development roadmap](https://github.com/niobium-project/niobium/blob/main/docs/roadmap-v0.2.md); if this page and those disagree, they are right. What is planned next, in plain terms, is on the [Roadmap](/roadmap/).
 
 ## Where it was verified
 

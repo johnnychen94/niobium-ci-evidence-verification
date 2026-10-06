@@ -35,6 +35,39 @@ zig-out/example/setup install --silent --scope user
 zig-out/example/setup status --json
 ```
 
+## Roadmap
+
+✅ available in 0.1 · 🚧 being built now, in priority order · 🔜 next · 🗓️ later · ⛔ not planned. Verification results are on [Status and platforms](apps/user-docs/src/content/docs/status.md).
+
+| Status | Feature |
+|---|---|
+| ✅ | Online and offline installs |
+| ✅ | Release channels (`stable`, `beta`, `nightly`) |
+| ✅ | Install, update, repair and uninstall as transactions |
+| ✅ | Safe rollback |
+| ✅ | Portable Run |
+| ✅ | Updates from inside your app through the C ABI |
+| 🚧 1 | Built-in feature modules |
+| 🚧 2 | Presets and themes for building installers quickly |
+| 🚧 3 | Production-ready on macOS, Windows and Linux: real-OS testing, machine-wide installs, OS code signing |
+| 🚧 4 | Easier to adopt: prebuilt downloads and a stable build API |
+| 🚧 5 | More system integrations: `myapp://` links, `PATH` and environment variables |
+| 🚧 6 | In-app updates for any application, Electron and Node.js first |
+| 🔜 | "What's new" release notes, signed with the release |
+| 🔜 | Start at login |
+| 🔜 | Key rotation from `nbpack` |
+| 🔜 | A security policy with a private reporting channel |
+| 🗓️ | Screen-reader support |
+| 🗓️ | A native folder picker on Linux |
+| 🗓️ | The installer window in the user's language |
+| 🗓️ | More platforms: Windows on ARM, Kylin, UOS |
+| ⛔ | Install scripts, custom actions, plugins and runtime extensions |
+| ⛔ | Running arbitrary commands with administrator rights |
+| ⛔ | A single-file self-extracting installer |
+| ⛔ | A native Wayland backend |
+
+What each feature means for you, and why the ⛔ items are left out: [Roadmap](apps/user-docs/src/content/docs/roadmap.md).
+
 ## Background
 
 Niobium is a hobby project that the author works on while employed at TongYuan. It is not part of TongYuan's commercial products; it exists to support creating installers for TongYuan products, whether internal, experimental or commercial. TongYuan gives the project no direct support or steering, so maintenance is best effort and the platform list is kept short on purpose: see [About the project](apps/user-docs/src/content/docs/about.md) and [Platform support](apps/user-docs/src/content/docs/platforms.md).
@@ -42,11 +75,12 @@ Niobium is a hobby project that the author works on while employed at TongYuan. 
 ## Documentation
 
 - User documentation (English and Chinese): https://niobium-project.dev
+- Feature roadmap: [Roadmap](apps/user-docs/src/content/docs/roadmap.md)
 - Platform tiers and roadmap: [Platform support](apps/user-docs/src/content/docs/platforms.md)
 - Conventions: [AGENTS.md](AGENTS.md)
 - Glossary: [GLOSSARY.md](GLOSSARY.md)
 - Docs index: [docs/README.md](docs/README.md)
-- Roadmap and deferred items: [docs/roadmap-v0.1.md](docs/roadmap-v0.1.md)
+- Development roadmap and deferred items: [docs/roadmap-v0.2.md](docs/roadmap-v0.2.md)
 - Acceptance status: [docs/acceptance-plan-v0.1.md](docs/acceptance-plan-v0.1.md)
 
 ## License

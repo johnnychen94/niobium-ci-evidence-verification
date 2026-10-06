@@ -81,6 +81,7 @@ export default defineConfig({
         'security',
         'status',
         'platforms',
+        'roadmap',
         'troubleshooting',
         'about',
         {

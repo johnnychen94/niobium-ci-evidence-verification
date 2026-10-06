@@ -1,5 +1,7 @@
 # Roadmap v0.1 (MVP vertical slice)
 
+Historical: this phase is closed and the file is no longer edited. The current phase is [roadmap-v0.2](roadmap-v0.2.md), which carries forward the open items below.
+
 Goal: prove that **native GUI ≤ 30 MiB + transactional engine + no-script component model** holds.
 
 ## Scope

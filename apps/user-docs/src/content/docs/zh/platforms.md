@@ -30,7 +30,9 @@ Niobium 把它构建的平台分为三个层级。层级说明项目在该平台
 
 每个目标的结果见[状态与平台](/zh/status/)。
 
-## 路线图
+## 路线图 { #roadmap }
+
+本节只涉及平台。计划中的功能见[路线图](/zh/roadmap/)。
 
 ### 第一个一级平台发布之前
 
@@ -41,14 +43,14 @@ Niobium 把它构建的平台分为三个层级。层级说明项目在该平台
 - **所有平台：** 真实系统冒烟测试只覆盖用户范围安装；整机范围安装没有在那里测试。
 - **`aarch64-macos`：** 在真实 Mac 上走查图形安装程序是一项尚未执行的人工检查，最低支持的 macOS 版本也有待确定。
 
-### 候选平台
+### 候选平台 { #candidates }
 
 | 候选 | 层级 | 需要什么 |
 |---|---|---|
 | `aarch64-windows` | 3 | 一个构建目标和二进制检查条目，以及一条在 ARM64 版 Windows 11 上的真实系统通道 |
 | 麒麟（Kylin）和统信（UOS），x86_64 和 aarch64 | 3 | 每个发行版一条真实系统通道。Linux 二进制是静态的，预期无需修改即可运行，但这未经测试；桌面集成（`.desktop` 条目、MIME 包、systemd 单元、XDG 目录）需要在每个发行版上检查 |
 
-### 不在计划内
+### 不在计划内 { #not-planned }
 
 - **原生 Wayland 后端。** 在 Wayland 会话中，安装程序窗口通过 XWayland 运行。该决策记录在 [ADR-0010](https://github.com/niobium-project/niobium/blob/main/docs/adr/0010-x11-now-wayland-deferred.md) 中。
 

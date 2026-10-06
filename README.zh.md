@@ -35,6 +35,39 @@ zig-out/example/setup install --silent --scope user
 zig-out/example/setup status --json
 ```
 
+## 路线图
+
+✅ 0.1 中已提供 · 🚧 正在开发，按优先级排列 · 🔜 接下来 · 🗓️ 之后 · ⛔ 不在计划内。验证结果见[状态与平台](apps/user-docs/src/content/docs/zh/status.md)。
+
+| 状态 | 功能 |
+|---|---|
+| ✅ | 在线和离线安装 |
+| ✅ | 发布通道（`stable`、`beta`、`nightly`） |
+| ✅ | 以事务方式安装、更新、修复和卸载 |
+| ✅ | 安全回滚 |
+| ✅ | 便携运行 |
+| ✅ | 通过 C ABI 在应用内部更新 |
+| 🚧 1 | 内置功能模块 |
+| 🚧 2 | 用于快速构建安装程序的预设和主题 |
+| 🚧 3 | 在 macOS、Windows 和 Linux 上可用于生产环境：真实系统测试、整机范围安装、操作系统代码签名 |
+| 🚧 4 | 更容易上手：预构建的下载包和稳定的构建 API |
+| 🚧 5 | 更多系统集成：`myapp://` 链接、`PATH` 和环境变量 |
+| 🚧 6 | 适用于任何应用的应用内更新，首先提供 Electron 和 Node.js |
+| 🔜 | 与发布一起签名的“新功能说明” |
+| 🔜 | 登录时启动 |
+| 🔜 | 通过 `nbpack` 轮换密钥 |
+| 🔜 | 带私密报告渠道的安全策略 |
+| 🗓️ | 屏幕阅读器支持 |
+| 🗓️ | Linux 上的原生文件夹选择器 |
+| 🗓️ | 以用户的语言显示安装程序窗口 |
+| 🗓️ | 更多平台：ARM 版 Windows、麒麟、统信 |
+| ⛔ | 安装脚本、自定义动作、插件和运行时扩展 |
+| ⛔ | 以管理员权限运行任意命令 |
+| ⛔ | 单文件自解压安装程序 |
+| ⛔ | 原生 Wayland 后端 |
+
+每项功能对你意味着什么、为什么不做 ⛔ 项：[路线图](apps/user-docs/src/content/docs/zh/roadmap.md)。
+
 ## 背景
 
 Niobium 是作者在同元软控工作期间开发的业余项目。它不属于同元软控的商业产品，诞生的目的是为同元软控的产品（内部、实验性或商业产品）制作安装程序提供支持。同元软控不对本项目提供直接支持或方向指导，因此维护以尽力而为为原则，支持的平台也刻意保持精简：参见 [About the project](apps/user-docs/src/content/docs/about.md) 与 [Platform support](apps/user-docs/src/content/docs/platforms.md)。
@@ -44,11 +77,12 @@ Niobium 是作者在同元软控工作期间开发的业余项目。它不属于
 除用户文档网站外，其余文档均为英文。
 
 - 用户文档（中英文）：https://niobium-project.dev/zh/
+- 功能路线图：[路线图](apps/user-docs/src/content/docs/zh/roadmap.md)
 - 平台分级与路线图：[Platform support](apps/user-docs/src/content/docs/platforms.md)
 - 约定：[AGENTS.md](AGENTS.md)
 - 术语：[GLOSSARY.md](GLOSSARY.md)
 - 文档索引：[docs/README.md](docs/README.md)
-- 路线图与延后项：[docs/roadmap-v0.1.md](docs/roadmap-v0.1.md)
+- 开发路线图与延后项：[docs/roadmap-v0.2.md](docs/roadmap-v0.2.md)
 - 验收状态：[docs/acceptance-plan-v0.1.md](docs/acceptance-plan-v0.1.md)
 
 ## 许可证

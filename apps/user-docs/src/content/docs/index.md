@@ -50,6 +50,7 @@ Niobium does not fit when:
 | [Security](/security/) | Learn what Niobium defends against, what it does not, and how to report a problem |
 | [Status and platforms](/status/) | Check what has been verified, on which platform, with which result |
 | [Platform support](/platforms/) | See which platforms are targeted, at which support tier, and what comes next |
+| [Roadmap](/roadmap/) | See which features are available, which are being built, and which are not planned |
 | [Troubleshooting](/troubleshooting/) | Map an exit code or failure to its cause, and find logs |
 | [About the project](/about/) | Learn why Niobium exists, who maintains it, and what support to expect |
 | [Reference](/reference/manifest/) | Look up fields, commands, exit codes, events and the C ABI |

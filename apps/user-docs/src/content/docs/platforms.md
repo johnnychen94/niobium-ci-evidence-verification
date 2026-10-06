@@ -32,6 +32,8 @@ Results for each target are on [Status and platforms](/status/).
 
 ## Roadmap
 
+This section covers platforms only. Planned features are on the [Roadmap](/roadmap/).
+
 ### Before the first Tier 1 release
 
 Each Tier 1 platform still has a gap between its commitment and its test lanes:

@@ -15,7 +15,7 @@ Niobium 0.1 是一个用来证明模型可行的纵向切片，尚不能用于�
 | `NOT_RUN` | 可以运行，但尚未运行 |
 | `DEFERRED` | 有意不在本版本范围内 |
 
-事实来源是仓库中的[验收计划](https://github.com/niobium-project/niobium/blob/main/docs/acceptance-plan-v0.1.md)和[路线图](https://github.com/niobium-project/niobium/blob/main/docs/roadmap-v0.1.md)；如果本页与它们不一致，以它们为准。
+事实来源是仓库中的[验收计划](https://github.com/niobium-project/niobium/blob/main/docs/acceptance-plan-v0.1.md)和[开发路线图](https://github.com/niobium-project/niobium/blob/main/docs/roadmap-v0.2.md)；如果本页与它们不一致，以它们为准。接下来计划做什么，用通俗的说法写在[路线图](/zh/roadmap/)上。
 
 ## 在哪里验证
 

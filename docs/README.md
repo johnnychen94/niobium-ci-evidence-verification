@@ -7,7 +7,8 @@
 | Purpose | Document |
 |---|---|
 | Original architecture input (read-only) | [architecture-v0.1](source/architecture-v0.1.md), [architecture-v0.2](source/architecture-v0.2.md) |
-| Current phase scope and deferred items | [roadmap-v0.1](roadmap-v0.1.md) |
+| Current phase scope and deferred items | [roadmap-v0.2](roadmap-v0.2.md); previous phase [roadmap-v0.1](roadmap-v0.1.md) |
+| Feature roadmap in user terms (user site) | [Roadmap](../apps/user-docs/src/content/docs/roadmap.md) |
 | Platform tiers: maintainer obligations; current tiers and platform roadmap (user site) | [ADR-0014](adr/0014-tier-based-platform-support.md), [Platform support](../apps/user-docs/src/content/docs/platforms.md) |
 | Acceptance IDs and actual status | [acceptance-plan-v0.1](acceptance-plan-v0.1.md) |
 | Decision records | [adr/README.md](adr/README.md) |

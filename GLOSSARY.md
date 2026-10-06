@@ -1,6 +1,6 @@
 # Glossary
 
-Terms match MVP v0.1 (see [docs/roadmap-v0.1.md](docs/roadmap-v0.1.md)). Code identifiers use the English names in parentheses.
+Terms match MVP v0.1 (see [docs/roadmap-v0.1.md](docs/roadmap-v0.1.md)); terms proposed for v0.2 ([docs/roadmap-v0.2.md](docs/roadmap-v0.2.md)) are listed separately. Code identifiers use the English names in parentheses.
 
 ## Current MVP
 
@@ -27,6 +27,12 @@ Terms match MVP v0.1 (see [docs/roadmap-v0.1.md](docs/roadmap-v0.1.md)). Code id
 - **RepositorySource**: one of three sources, Http / Directory / Embedded, each presenting the same TUF metadata + artifacts view to the resolver.
 - **VirtualPlatform**: a test platform implementation that can inject deterministic faults.
 - **UiTree / DisplayList / SemanticTree**: the three deterministic intermediate products of the UI pipeline, describing structure, drawing and accessibility semantics respectively.
+
+## Proposed for v0.2
+
+- **Feature module**: one built-in owner directory holding everything a capability or distribution feature needs, from schema fragment to platform backends and conformance cases; the set is fixed at compile time ([ADR-0018](docs/adr/0018-built-in-feature-modules.md)).
+- **Preset**: versioned data that a scaffold command expands into ordinary product, component and branding files for one kind of product; never read at install time ([ADR-0019](docs/adr/0019-presets-and-themes.md)).
+- **Theme**: one of a closed set of named token sets for the installer window, selected in `branding` ([ADR-0019](docs/adr/0019-presets-and-themes.md)).
 
 ## Deferred terms
 
