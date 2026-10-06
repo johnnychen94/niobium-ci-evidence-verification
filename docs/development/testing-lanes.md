@@ -25,7 +25,7 @@ GitHub Actions on the public repository. The required check is `CI / linux`. A n
 | Daily 02:00 UTC+8, if `main` has commits this workflow has not already completed; or the `ci:verify` label | `verify` | `zig build verify --cache-poison=disallowed` on a fresh build cache |
 | Sunday 04:00 UTC+8, same skip rule | `windows`, `macos`, `arm-golden` | Host tests plus `zig build golden` on Linux arm64 |
 
-`vm-smoke` and `fuzz` stay local. CodeRabbit review and the Codecov status are advisory. The debug `.zig-cache` is restored by OS and CPU architecture, saved only after a successful same-repository build, and is not used by the nightly verify. Fork pull requests restore that cache and do not write a new one.
+`vm-smoke` and `fuzz` stay local. Copilot code review and the Codecov status are advisory. The debug `.zig-cache` is restored by OS and CPU architecture, saved only after a successful same-repository build, and is not used by the nightly verify. Fork pull requests restore that cache and do not write a new one.
 
 ## Evidence
 
