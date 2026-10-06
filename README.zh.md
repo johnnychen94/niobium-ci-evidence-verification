@@ -37,8 +37,9 @@ zig-out/example/setup status --json
 
 ## 文档
 
-其余文档均为英文。
+除用户文档网站外，其余文档均为英文。
 
+- 用户文档（中英文）：https://niobium-project.dev/zh/
 - 约定：[AGENTS.md](AGENTS.md)
 - 术语：[GLOSSARY.md](GLOSSARY.md)
 - 文档索引：[docs/README.md](docs/README.md)

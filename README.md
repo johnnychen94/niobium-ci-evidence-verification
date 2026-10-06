@@ -37,6 +37,7 @@ zig-out/example/setup status --json
 
 ## Documentation
 
+- User documentation (English and Chinese): https://niobium-project.dev
 - Conventions: [AGENTS.md](AGENTS.md)
 - Glossary: [GLOSSARY.md](GLOSSARY.md)
 - Docs index: [docs/README.md](docs/README.md)
