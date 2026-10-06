@@ -14,7 +14,7 @@
 | Transactions, commit and recovery | [transaction-model](architecture/transaction-model.md) |
 | UI engine | [ui-engine](architecture/ui-engine.md) |
 | Directory and owner rules | [repository-layout](development/repository-layout.md) |
-| Test lanes and evidence | [testing-lanes](development/testing-lanes.md) |
+| Test lanes, evidence, and continuous integration | [testing-lanes](development/testing-lanes.md) |
 | Checks, lint and rule iteration | [tooling-and-rules](development/tooling-and-rules.md) |
 | UI component lifecycle | [ui-component-lifecycle](development/ui-component-lifecycle.md) |
 | Commit conventions | [commits](development/commits.md) |

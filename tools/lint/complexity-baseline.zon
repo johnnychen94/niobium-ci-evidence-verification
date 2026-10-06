@@ -24,7 +24,7 @@
         .{ .path = "build/steps/deps.zig", .tokens = 296, .nodes = 145 },
         .{ .path = "build/steps/e2e.zig", .tokens = 490, .nodes = 225 },
         .{ .path = "build/steps/example.zig", .tokens = 245, .nodes = 118 },
-        .{ .path = "build/steps/tests.zig", .tokens = 930, .nodes = 404 },
+        .{ .path = "build/steps/tests.zig", .tokens = 1250, .nodes = 560 },
         .{ .path = "build/steps/ui.zig", .tokens = 385, .nodes = 190 },
         .{ .path = "build/steps/vm.zig", .tokens = 270, .nodes = 135 },
         .{ .path = "build/targets.zig", .tokens = 237, .nodes = 72 },

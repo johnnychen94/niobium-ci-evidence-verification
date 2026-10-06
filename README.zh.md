@@ -1,5 +1,7 @@
 # Niobium
 
+[![codecov](https://codecov.io/gh/niobium-project/niobium/graph/badge.svg)](https://codecov.io/gh/niobium-project/niobium)
+
 [English](README.md) | 简体中文
 
 用 Zig 实现的 native、declarative、transactional 安装与分发框架：一个小而可审计的部署 substrate，语义被刻意限制。
@@ -20,6 +22,8 @@ zig build test            # 单元测试
 zig build verify          # 完成定义门禁（check + test + sim + golden + e2e + example + cross + size-gate）
 zig build gallery         # UI 组件画廊 PNG → .evidence/ui-gallery/
 ```
+
+拉取请求在 GitHub Actions 上运行。必需检查是 `CI / linux`。代码变更还会运行 `zig build test` 与 `zig build c-smoke`；完整的 `zig build verify` 在 `main` 有新提交时每天运行一次。详见 [testing lanes](docs/development/testing-lanes.md)。
 
 ## 示例产品
 

@@ -12,6 +12,21 @@
 | L4 build API | `examples/hello` as a standalone package depending on this repository by path, producing an offline bundle with `build/sdk.zig` ([consuming](consuming.md)) | `zig build example` | Yes |
 | L5 real OS | Parallels Windows 11, Ubuntu ARM64 | `zig build vm-smoke` | No; reports BLOCKED when unavailable |
 
+## Continuous integration
+
+GitHub Actions on the public repository. The required check is `CI / linux`. A new commit on a pull request cancels the previous run for that ref. Pushes to `main`, the nightly verify, and the weekly host run are not cancelled.
+
+| When | Job | Command |
+|---|---|---|
+| Every pull request and push to `main` | `linux` | `zig build check` |
+| Any `.zig`, `.zon`, `api/`, `build/`, `examples/`, `tests/`, or `third_party/` change | `linux`, then `coverage` | `zig build test`, `zig build c-smoke`; coverage is `zig build test -Dcoverage` under kcov and is not required |
+| Those code changes plus `libs/ui/` or `tests/golden/` | `linux` | `zig build golden` |
+| `libs/platform/`, `libs/privilege/`, or `libs/ui/backend/`, or the `ci:hosts` label | `windows`, `macos` | `zig build test` on Windows; `zig build test -Dtsan` on macOS. Not required |
+| Daily 02:00 UTC+8, if `main` has commits this workflow has not already completed; or the `ci:verify` label | `verify` | `zig build verify --cache-poison=disallowed` on a fresh build cache |
+| Sunday 04:00 UTC+8, same skip rule | `windows`, `macos`, `arm-golden` | Host tests plus `zig build golden` on Linux arm64 |
+
+`vm-smoke` and `fuzz` stay local. CodeRabbit review and the Codecov status are advisory. The debug `.zig-cache` is restored by OS and CPU architecture, saved only after a successful same-repository build, and is not used by the nightly verify. Fork pull requests restore that cache and do not write a new one.
+
 ## Evidence
 
 - Test names start with an acceptance ID, for example `test "N1-INV-01: crash at every op recovers to OLD or NEW"`; `tools/check-docs` verifies that the ID exists in [acceptance-plan-v0.1](../acceptance-plan-v0.1.md).

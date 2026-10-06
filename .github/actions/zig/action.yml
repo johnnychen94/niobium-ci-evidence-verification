@@ -1,0 +1,50 @@
+name: Zig 0.17
+description: Install Zig 0.17.0 and restore or save the dependency and debug build caches
+inputs:
+  mode:
+    description: restore installs Zig and restores caches; save writes them after the build
+    required: true
+  build-cache:
+    description: Include the debug .zig-cache (false for the clean nightly verify)
+    required: false
+    default: "true"
+
+runs:
+  using: composite
+  steps:
+    - if: inputs.mode == 'restore'
+      uses: mlugg/setup-zig@d1434d08867e3ee9daa34448df10607b98908d29 # v2.2.1
+      with:
+        version: 0.17.0
+        use-cache: false
+
+    - if: inputs.mode == 'restore'
+      shell: bash
+      run: echo "ZIG_GLOBAL_CACHE_DIR=${GITHUB_WORKSPACE}/.cache/zig-global" >> "$GITHUB_ENV"
+
+    - if: inputs.mode == 'restore'
+      uses: actions/cache/restore@caa296126883cff596d87d8935842f9db880ef25 # v5.1.0
+      with:
+        path: .cache/zig-global
+        key: deps-${{ runner.os }}-${{ runner.arch }}-0.17-${{ hashFiles('third_party/deps.zon') }}
+
+    - if: inputs.mode == 'restore' && inputs.build-cache == 'true'
+      uses: actions/cache/restore@caa296126883cff596d87d8935842f9db880ef25 # v5.1.0
+      with:
+        path: .zig-cache
+        key: build-${{ runner.os }}-${{ runner.arch }}-0.17-${{ hashFiles('third_party/deps.zon', 'build.zig.zon') }}-${{ github.sha }}
+        restore-keys: |
+          build-${{ runner.os }}-${{ runner.arch }}-0.17-${{ hashFiles('third_party/deps.zon', 'build.zig.zon') }}-
+          build-${{ runner.os }}-${{ runner.arch }}-0.17-
+
+    - if: inputs.mode == 'save'
+      uses: actions/cache/save@caa296126883cff596d87d8935842f9db880ef25 # v5.1.0
+      with:
+        path: .cache/zig-global
+        key: deps-${{ runner.os }}-${{ runner.arch }}-0.17-${{ hashFiles('third_party/deps.zon') }}
+
+    - if: inputs.mode == 'save' && inputs.build-cache == 'true'
+      uses: actions/cache/save@caa296126883cff596d87d8935842f9db880ef25 # v5.1.0
+      with:
+        path: .zig-cache
+        key: build-${{ runner.os }}-${{ runner.arch }}-0.17-${{ hashFiles('third_party/deps.zon', 'build.zig.zon') }}-${{ github.sha }}

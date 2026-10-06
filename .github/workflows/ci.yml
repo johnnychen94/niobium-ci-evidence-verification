@@ -1,0 +1,134 @@
+# Required pull-request check, plus coverage and host jobs selected by path.
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+permissions:
+  contents: read
+
+jobs:
+  changes:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    outputs:
+      code: ${{ steps.paths.outputs.code }}
+      ui: ${{ steps.paths.outputs.ui }}
+      host: ${{ steps.paths.outputs.host }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - id: paths
+        env:
+          PR_BASE: ${{ github.event.pull_request.base.sha }}
+          PR_HEAD: ${{ github.event.pull_request.head.sha }}
+          PUSH_BEFORE: ${{ github.event.before }}
+        run: sh .github/ci/changed-paths.sh
+
+  linux:
+    needs: changes
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: ./.github/actions/zig
+        with:
+          mode: restore
+      - run: zig build check
+      - if: needs.changes.outputs.code == 'true'
+        run: zig build test
+      - if: needs.changes.outputs.code == 'true'
+        run: zig build c-smoke
+      - if: needs.changes.outputs.code == 'true' && needs.changes.outputs.ui == 'true'
+        run: zig build golden
+      - if: github.event_name == 'pull_request'
+        env:
+          PR_TITLE: ${{ github.event.pull_request.title }}
+        run: |
+          set -eu
+          if [ "${#PR_TITLE}" -gt 200 ]; then
+            echo "pull request title is longer than 200 bytes"
+            exit 1
+          fi
+          printf '%s\n' "$PR_TITLE" | grep -Eq \
+            '^(feat|fix|test|docs|refactor|chore|adr|build)\([a-z0-9/_-]+\): .+'
+      - if: github.event_name == 'pull_request' && needs.changes.outputs.code == 'true'
+        run: >
+          zig build check-commits --
+          ${{ github.event.pull_request.base.sha }}..${{ github.event.pull_request.head.sha }}
+      - if: success() && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository)
+        uses: ./.github/actions/zig
+        with:
+          mode: save
+
+  coverage:
+    needs: [changes, linux]
+    if: needs.changes.outputs.code == 'true'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/zig
+        with:
+          mode: restore
+      - run: sudo apt-get update && sudo apt-get install -y kcov
+      - run: zig build test -Dcoverage
+      - uses: codecov/codecov-action@0fb7174895f61a3b6b78fc075e0cd60383518dac # v5.5.5
+        with:
+          directory: zig-out/coverage
+          fail_ci_if_error: true
+
+  windows:
+    needs: changes
+    if: >-
+      needs.changes.outputs.host == 'true' ||
+      (github.event_name == 'pull_request' &&
+       contains(github.event.pull_request.labels.*.name, 'ci:hosts'))
+    runs-on: windows-2025
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/zig
+        with:
+          mode: restore
+      - run: zig build test
+      - if: success() && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository)
+        uses: ./.github/actions/zig
+        with:
+          mode: save
+
+  macos:
+    needs: changes
+    if: >-
+      needs.changes.outputs.host == 'true' ||
+      (github.event_name == 'pull_request' &&
+       contains(github.event.pull_request.labels.*.name, 'ci:hosts'))
+    runs-on: macos-15
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/zig
+        with:
+          mode: restore
+      - run: zig build test -Dtsan
+      - if: success() && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository)
+        uses: ./.github/actions/zig
+        with:
+          mode: save

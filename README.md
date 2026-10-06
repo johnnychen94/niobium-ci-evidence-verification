@@ -1,5 +1,7 @@
 # Niobium
 
+[![codecov](https://codecov.io/gh/niobium-project/niobium/graph/badge.svg)](https://codecov.io/gh/niobium-project/niobium)
+
 English | [Chinese](README.zh.md)
 
 A native, declarative, transactional installation and distribution framework written in Zig: a small, auditable deployment substrate with deliberately limited semantics.
@@ -20,6 +22,8 @@ zig build test            # unit tests
 zig build verify          # definition-of-done gate (check + test + sim + golden + e2e + example + cross + size-gate)
 zig build gallery         # UI component gallery PNGs -> .evidence/ui-gallery/
 ```
+
+Pull requests run on GitHub Actions. The required check is `CI / linux`. Code changes also run `zig build test` and `zig build c-smoke`; the full `zig build verify` gate runs daily when `main` has new commits. See [testing lanes](docs/development/testing-lanes.md).
 
 ## Example product
 

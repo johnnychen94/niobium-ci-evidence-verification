@@ -12,9 +12,17 @@ pub const chinese_readme = "README.zh.md";
 /// Public hosts the repository may reference; adding one is a reviewed change.
 /// `example.com` and its subdomains are always allowed for fixtures.
 pub const allowed_hosts = [_][]const u8{
-    "127.0.0.1",           "cdn.jsdelivr.net", "codeload.github.com",       "github.com",
-    "json-schema.org",     "niobium.dev",      "raw.githubusercontent.com", "schemas.microsoft.com",
-    "www.freedesktop.org", "www.apple.com",
+    "127.0.0.1",
+    "cdn.jsdelivr.net",
+    "codecov.io",
+    "codeload.github.com",
+    "github.com",
+    "json-schema.org",
+    "niobium.dev",
+    "raw.githubusercontent.com",
+    "schemas.microsoft.com",
+    "www.apple.com",
+    "www.freedesktop.org",
 };
 
 /// Text files scanned for URL hosts.

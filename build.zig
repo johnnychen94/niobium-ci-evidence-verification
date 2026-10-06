@@ -58,6 +58,7 @@ pub fn build(b: *std.Build) void {
     const target = b.standardTargetOptions(.{});
     const optimize = b.standardOptimizeOption(.{});
     const tsan = b.option(bool, "tsan", "ThreadSanitizer lane for test") orelse false;
+    const coverage = b.option(bool, "coverage", "kcov on zig build test") orelse false;
     const seeds: SimSeeds = .{
         .count = b.option(u32, "seeds", "Seeds for zig build sim") orelse 500,
         .start = b.option(u64, "seed-start", "First sim seed (replay a failure)") orelse 0,
@@ -90,7 +91,7 @@ pub fn build(b: *std.Build) void {
     }
     b.installFile("api/c/distribution.h", "include/distribution.h");
 
-    const steps = addQualitySteps(b, &graph, tools, tsan, seeds);
+    const steps = addQualitySteps(b, &graph, tools, tsan, seeds, coverage);
     const cross_steps = cross.add(b, inputs, tools.check_binary, options);
     const cross_tests = b.step("test-cross", "Compile unit + conformance tests for every target");
     tests.addCrossTests(b, inputs, &app_tests, cross_tests);
@@ -157,6 +158,7 @@ fn addQualitySteps(
     tools: checks.Tools,
     tsan: bool,
     seeds: SimSeeds,
+    coverage: bool,
 ) QualitySteps {
     const fmt = b.step("fmt", "zig fmt --check --ast-check");
     fmt.dependOn(checks.addFmtCheck(b));
@@ -182,7 +184,7 @@ fn addQualitySteps(
     check.dependOn(&checks.addRepoRun(b, tools.check, &.{}).step);
 
     const test_step = b.step("test", "Unit tests per module + conformance (SafeAllocator)");
-    addAllTests(b, graph, test_step);
+    addAllTests(b, graph, test_step, coverage);
     checks.addToolTests(b, tools, test_step);
     const tsan_step: ?*std.Build.Step = if (tsan or hostSupportsTsan(b)) addTsan(
         b,
@@ -201,10 +203,18 @@ fn addQualitySteps(
     return .{ .check = check, .test_step = test_step, .sim = sim, .tsan = tsan_step };
 }
 
-fn addAllTests(b: *std.Build, graph: *const graph_mod.Graph, test_step: *std.Build.Step) void {
-    tests.addUnitTests(b, graph, test_step);
-    test_step.dependOn(&tests.addSuite(b, graph, "conformance", b.addOptions()).step);
-    tests.addAppTests(b, graph, test_step, &app_tests);
+fn addAllTests(
+    b: *std.Build,
+    graph: *const graph_mod.Graph,
+    test_step: *std.Build.Step,
+    coverage: bool,
+) void {
+    const root: ?[]const u8 = if (coverage) "zig-out/coverage" else null;
+    tests.addUnitTests(b, graph, test_step, root);
+    const conformance = tests.compileSuite(b, graph, "conformance", b.addOptions());
+    const suite_dir = if (root) |base| b.fmt("{s}/suite-conformance", .{base}) else null;
+    tests.dependOnTest(b, test_step, conformance, suite_dir);
+    tests.addAppTests(b, graph, test_step, &app_tests, root);
 }
 
 const app_tests = [_]tests.AppTest{
