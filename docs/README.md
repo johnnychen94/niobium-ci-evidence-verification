@@ -1,6 +1,6 @@
 # Documentation index
 
-`docs/` holds maintainer documentation only: architecture, specifications, decisions, development process, runbooks and acceptance. The hard constraints live in the root [AGENTS.md](../AGENTS.md).
+`docs/` holds maintainer documentation only: architecture, specifications, decisions, development process, runbooks and acceptance. The hard constraints live in the root [AGENTS.md](../AGENTS.md). Documentation for people who build installers with Niobium is the site at https://niobium-project.dev, built from [apps/user-docs](../apps/user-docs/README.md) ([ADR-0015](adr/0015-node-toolchain-for-user-docs.md)).
 
 ## Find by purpose
 

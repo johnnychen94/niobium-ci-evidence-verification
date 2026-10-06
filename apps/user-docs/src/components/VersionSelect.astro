@@ -1,0 +1,58 @@
+---
+// Version switcher. The list comes from the site-root /versions.json at runtime, so a build of an
+// older release still lists releases published after it.
+import Select from '@astrojs/starlight/components/Select.astro';
+import { docsVersion } from '../site-version.mjs';
+
+const t = Astro.locals.t;
+const currentLabel =
+  docsVersion === 'next'
+    ? t('niobium.version.next')
+    : docsVersion === 'latest'
+      ? t('niobium.version.latest')
+      : docsVersion;
+---
+
+<niobium-version-select
+  data-version={docsVersion}
+  data-base={import.meta.env.BASE_URL}
+  data-next-label={t('niobium.version.next')}
+  data-latest-suffix={t('niobium.version.latestSuffix')}
+>
+  <Select
+    icon="code-branch"
+    label={t('niobium.version.label')}
+    options={[{ label: currentLabel, value: docsVersion, selected: true }]}
+    width="10em"
+  />
+</niobium-version-select>
+
+<script>
+  import { loadVersions, switchTarget, type VersionList } from './versions';
+
+  function optionLabel(id: string, list: VersionList, nextLabel: string, suffix: string) {
+    if (id === 'next') return nextLabel;
+    return id === list.latest ? id + suffix : id;
+  }
+
+  class NiobiumVersionSelect extends HTMLElement {
+    async connectedCallback() {
+      const select = this.querySelector('select');
+      const list = await loadVersions();
+      if (!select || !list) return;
+      const { version = 'next', base = '/', nextLabel = '', latestSuffix = '' } = this.dataset;
+      const current = version === 'latest' ? list.latest : version;
+      select.replaceChildren(
+        ...list.versions.map((entry) => {
+          const label = optionLabel(entry.id, list, nextLabel, latestSuffix);
+          return new Option(label, entry.id, false, entry.id === current);
+        }),
+      );
+      select.addEventListener('change', async () => {
+        const target = await switchTarget(list, select.value, base, window.location);
+        if (target) window.location.href = target;
+      });
+    }
+  }
+  customElements.define('niobium-version-select', NiobiumVersionSelect);
+</script>

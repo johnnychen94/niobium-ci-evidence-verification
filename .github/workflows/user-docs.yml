@@ -1,0 +1,92 @@
+# User documentation site (apps/user-docs, docs/adr/0015-node-toolchain-for-user-docs.md).
+# Pull requests build `next` only. Pushes to main and release tags (vX.Y.Z) rebuild every
+# version with scripts/build-versions.mjs and deploy the assembled site to GitHub Pages.
+name: user-docs
+
+on:
+  pull_request:
+    paths:
+      - apps/user-docs/**
+      - .github/workflows/user-docs.yml
+  push:
+    branches: [main]
+    # Path filters do not apply to tag pushes; every v* tag deploys.
+    tags: ["v*"]
+    paths:
+      - apps/user-docs/**
+      - .github/workflows/user-docs.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: user-docs-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+env:
+  ASTRO_TELEMETRY_DISABLED: "1"
+
+jobs:
+  build:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: apps/user-docs
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version-file: apps/user-docs/.nvmrc
+          cache: npm
+          cache-dependency-path: apps/user-docs/package-lock.json
+      - run: npm ci
+      - run: npm run build
+        env:
+          DOCS_VERSION: next
+          DOCS_BASE: /next/
+
+  assemble:
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    defaults:
+      run:
+        working-directory: apps/user-docs
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+          persist-credentials: false
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version-file: apps/user-docs/.nvmrc
+          cache: npm
+          cache-dependency-path: apps/user-docs/package-lock.json
+      - run: npm ci
+      - run: npm run build:versions -- --next-ref origin/main
+      - uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
+        with:
+          path: apps/user-docs/dist-versions
+
+  deploy:
+    needs: assemble
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      pages: write
+      id-token: write
+    concurrency:
+      group: pages
+      cancel-in-progress: false
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346 # v5.0.1

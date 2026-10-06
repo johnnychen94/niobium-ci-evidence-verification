@@ -1,0 +1,16 @@
+{
+  "niobium.locale.label": "简体中文",
+  "niobium.sidebar.startHere": "从这里开始",
+  "niobium.sidebar.overview": "概览",
+  "niobium.sidebar.tutorial": "教程：第一次发布",
+  "niobium.sidebar.concepts": "概念",
+  "niobium.sidebar.guides": "指南",
+  "niobium.sidebar.reference": "参考",
+  "niobium.version.label": "文档版本",
+  "niobium.version.next": "next（未发布）",
+  "niobium.version.latest": "最新版",
+  "niobium.version.latestSuffix": "（最新）",
+  "niobium.banner.next": "你正在查看尚未发布的 main 分支的文档，其中可能包含尚未进入任何发布版本的变更。",
+  "niobium.banner.old": "你正在查看旧发布版本的文档。",
+  "niobium.banner.toLatest": "前往最新发布版本"
+}

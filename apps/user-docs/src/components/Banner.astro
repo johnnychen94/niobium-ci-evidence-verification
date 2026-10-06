@@ -1,0 +1,66 @@
+---
+// Version notices above every page: `next` is unreleased; a release line other than the latest
+// is an older release. Whether a release line is still the latest is only known at runtime,
+// from /versions.json, so that banner starts hidden.
+import Default from '@astrojs/starlight/components/Banner.astro';
+import { docsVersion, isReleaseLine } from '../site-version.mjs';
+
+const t = Astro.locals.t;
+const locale = Astro.locals.starlightRoute.locale;
+const latestHome = locale ? `/latest/${locale}/` : '/latest/';
+const notice = docsVersion === 'next' ? 'niobium.banner.next' : 'niobium.banner.old';
+const show = docsVersion === 'next' || isReleaseLine;
+---
+
+{
+  show && (
+    <niobium-version-banner
+      class="niobium-version-banner"
+      data-version={docsVersion}
+      hidden={isReleaseLine || undefined}
+      data-pagefind-ignore
+    >
+      {t(notice)}{' '}
+      <a href={latestHome} hidden>
+        {t('niobium.banner.toLatest')}
+      </a>
+    </niobium-version-banner>
+  )
+}
+<Default />
+
+<script>
+  import { loadVersions } from './versions';
+
+  class NiobiumVersionBanner extends HTMLElement {
+    async connectedCallback() {
+      const list = await loadVersions();
+      if (!list || list.latest === null) return;
+      const version = this.dataset.version;
+      if (version !== 'next' && version !== list.latest) this.hidden = false;
+      const link = this.querySelector('a');
+      if (link) link.hidden = false;
+    }
+  }
+  customElements.define('niobium-version-banner', NiobiumVersionBanner);
+</script>
+
+<style>
+  .niobium-version-banner {
+    display: block;
+    padding: var(--sl-nav-pad-y) var(--sl-nav-pad-x);
+    background-color: var(--sl-color-orange-low);
+    color: var(--sl-color-orange-high);
+    border-bottom: 1px solid var(--sl-color-orange);
+    text-align: center;
+    text-wrap: balance;
+  }
+  .niobium-version-banner[hidden],
+  .niobium-version-banner a[hidden] {
+    display: none;
+  }
+  .niobium-version-banner a {
+    color: inherit;
+    font-weight: 600;
+  }
+</style>

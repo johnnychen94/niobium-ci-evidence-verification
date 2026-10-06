@@ -1,0 +1,16 @@
+{
+  "niobium.locale.label": "English",
+  "niobium.sidebar.startHere": "Start here",
+  "niobium.sidebar.overview": "Overview",
+  "niobium.sidebar.tutorial": "Tutorial: your first release",
+  "niobium.sidebar.concepts": "Concepts",
+  "niobium.sidebar.guides": "Guides",
+  "niobium.sidebar.reference": "Reference",
+  "niobium.version.label": "Documentation version",
+  "niobium.version.next": "next (unreleased)",
+  "niobium.version.latest": "latest",
+  "niobium.version.latestSuffix": " (latest)",
+  "niobium.banner.next": "You are viewing the documentation of the unreleased main branch. It can describe changes that are not in any release yet.",
+  "niobium.banner.old": "You are viewing the documentation of an older release.",
+  "niobium.banner.toLatest": "Go to the latest release"
+}
