@@ -5,6 +5,12 @@ zig-out/
 *.key.json
 .DS_Store
 
+# User documentation site (apps/user-docs): npm install and Astro outputs.
+/apps/user-docs/node_modules/
+/apps/user-docs/dist/
+/apps/user-docs/dist-versions/
+/apps/user-docs/.astro/
+
 # External skills: pinned by skills-lock.json, restored with `npx skills experimental_install`.
 /.agents/skills/apple-hig/
 /.agents/skills/gtk-ui-ux-engineer/

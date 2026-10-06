@@ -4,12 +4,17 @@ const std = @import("std");
 
 /// Directories never scanned by repository tools.
 pub const skipped_dirs = [_][]const u8{
-    ".git",         ".zig-cache", "zig-out", ".evidence", ".local", ".claude",
-    "node_modules", ".cursor",
+    ".git", ".zig-cache", "zig-out", ".evidence", ".local", ".claude", ".cursor",
 };
 
 /// Build outputs of nested packages (examples/hello builds on its own), skipped at any depth.
-pub const build_dirs = [_][]const u8{ ".zig-cache", "zig-out", "zig-pkg" };
+pub const build_dirs = [_][]const u8{ ".zig-cache", "zig-out", "zig-pkg", "node_modules" };
+
+/// Astro output and cache of the user documentation site
+/// (docs/adr/0015-node-toolchain-for-user-docs.md).
+pub const docs_site_outputs = [_][]const u8{
+    "apps/user-docs/dist", "apps/user-docs/dist-versions", "apps/user-docs/.astro",
+};
 
 /// External skills are pinned third-party content (skills-lock.json);
 /// only repo-owned ones are checked.
@@ -68,7 +73,7 @@ fn skipDir(path_raw: []const u8) bool {
     const path = buf[0..path_raw.len];
     @memcpy(path, path_raw);
     std.mem.replaceScalar(u8, path, '\\', '/');
-    for (skipped_dirs) |name| {
+    for (skipped_dirs ++ docs_site_outputs) |name| {
         if (std.mem.eql(u8, path, name)) return true;
     }
     for (build_dirs) |name| {
@@ -128,4 +133,14 @@ test "skipDir keeps owned skills and skips caches" {
     try std.testing.expect(!skipDir(".agents/skills/niobium-ui-kit"));
     try std.testing.expect(!skipDir(".agents/skills/review-niobium"));
     try std.testing.expect(!skipDir("libs/core"));
+}
+
+test "skipDir skips the docs site's install and build outputs" {
+    try std.testing.expect(skipDir("node_modules"));
+    try std.testing.expect(skipDir("apps/user-docs/node_modules"));
+    try std.testing.expect(skipDir("apps/user-docs/dist"));
+    try std.testing.expect(skipDir("apps/user-docs/.astro"));
+    try std.testing.expect(skipDir("apps/user-docs/dist-versions"));
+    try std.testing.expect(!skipDir("apps/user-docs/src"));
+    try std.testing.expect(!skipDir("apps/user-docs/public"));
 }

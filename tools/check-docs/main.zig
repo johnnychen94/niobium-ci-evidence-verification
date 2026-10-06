@@ -3,11 +3,10 @@
 
 const std = @import("std");
 const repo = @import("repo");
+const links = @import("links.zig");
+const locales = @import("locales.zig");
 
 pub const acceptance_path = "docs/acceptance-plan-v0.1.md";
-
-/// The only document that may contain CJK text.
-pub const chinese_readme = "README.zh.md";
 
 /// Public hosts the repository may reference; adding one is a reviewed change.
 /// `example.com` and its subdomains are always allowed for fixtures.
@@ -18,8 +17,10 @@ pub const allowed_hosts = [_][]const u8{
     "codeload.github.com",
     "github.com",
     "json-schema.org",
+    "niobium-project.dev",
     "niobium.dev",
     "raw.githubusercontent.com",
+    "registry.npmjs.org",
     "schemas.microsoft.com",
     "www.apple.com",
     "www.freedesktop.org",
@@ -27,7 +28,8 @@ pub const allowed_hosts = [_][]const u8{
 
 /// Text files scanned for URL hosts.
 pub const text_suffixes = [_][]const u8{
-    ".md", ".zig", ".zon", ".json", ".manifest", ".h", ".c", ".gitignore",
+    ".md",  ".mdx", ".zig",   ".zon", ".json", ".manifest", ".h", ".c", ".gitignore", ".yml",
+    ".mjs", ".ts",  ".astro",
 };
 
 pub fn main(init: std.process.Init) !void {
@@ -36,15 +38,12 @@ pub fn main(init: std.process.Init) !void {
     const files = try repo.list(arena, io);
     var report: repo.Report = .{ .arena = arena, .tool = "check-docs" };
     for (files.paths) |path| {
-        if (isText(path)) try checkHosts(&report, path, try repo.read(arena, io, path));
-        if (!std.mem.endsWith(u8, path, ".md")) continue;
+        const markdown = isMarkdown(path);
+        if (!isText(path) and !markdown) continue;
         const bytes = try repo.read(arena, io, path);
-        if (!std.mem.eql(u8, path, chinese_readme)) {
-            if (cjkLine(bytes)) |line| try report.add("{s}:{d}: docs must be English", .{
-                path,
-                line,
-            });
-        }
+        try checkHosts(&report, path, bytes);
+        try checkLanguage(&report, io, path, bytes, markdown);
+        if (!markdown) continue;
         try checkLinks(&report, io, path, bytes);
         if (isAdr(path)) try checkAdr(&report, path, bytes);
         if (std.mem.startsWith(u8, path, "docs/spec/") and !hasVersion(path)) {
@@ -53,6 +52,29 @@ pub fn main(init: std.process.Init) !void {
     }
     try checkAcceptance(&report, io, files);
     try report.finish(io);
+}
+
+/// English only outside `locales.cjkAllowed`; the site's two locales mirror each other.
+fn checkLanguage(
+    report: *repo.Report,
+    io: std.Io,
+    path: []const u8,
+    bytes: []const u8,
+    markdown: bool,
+) !void {
+    if (locales.cjkChecked(path, markdown) and !locales.cjkAllowed(path)) {
+        if (cjkLine(bytes)) |line| try report.add("{s}:{d}: must be English (ADR-0017)", .{
+            path,
+            line,
+        });
+    }
+    const other = try locales.counterpart(report.arena, path) orelse return;
+    if (repo.exists(io, other)) return;
+    if (std.mem.startsWith(u8, path, locales.zh_content)) {
+        try report.add("{s}: Chinese page has no English page at {s}", .{ path, other });
+    } else {
+        try report.add("{s}: English page has no Chinese translation at {s}", .{ path, other });
+    }
 }
 
 fn isAdr(path: []const u8) bool {
@@ -90,41 +112,46 @@ fn isText(path: []const u8) bool {
     return false;
 }
 
+fn isMarkdown(path: []const u8) bool {
+    return std.mem.endsWith(u8, path, ".md") or std.mem.endsWith(u8, path, ".mdx");
+}
+
+fn isLockfile(path: []const u8) bool {
+    return std.mem.eql(u8, std.fs.path.basenamePosix(path), "package-lock.json");
+}
+
 fn checkHosts(report: *repo.Report, path: []const u8, bytes: []const u8) !void {
-    if (forbiddenHost(bytes)) |host| try report.add(
+    const found = if (isLockfile(path)) forbiddenLockfileHost(bytes) else forbiddenHost(bytes);
+    if (found) |host| try report.add(
         "{s}: URL host '{s}' is not in allowed_hosts",
         .{ path, host },
     );
 }
 
-/// Markdown links `](target)`; external schemes and pure anchors are skipped.
+/// Markdown links `](target)`, resolved by `links.classify`.
 fn checkLinks(report: *repo.Report, io: std.Io, path: []const u8, bytes: []const u8) !void {
-    const dir = std.fs.path.dirnamePosix(path) orelse "";
     var rest = bytes;
     while (std.mem.find(u8, rest, "](")) |start| {
         rest = rest[start + 2 ..];
         const end = std.mem.findAny(u8, rest, ") \n") orelse break;
         const target_raw = rest[0..end];
         rest = rest[end..];
-        if (isExternal(target_raw)) continue;
-        const target = if (std.mem.findScalar(
-            u8,
-            target_raw,
-            '#',
-        )) |hash| target_raw[0..hash] else target_raw;
-        if (target.len == 0) continue;
-        const resolved = try std.fs.path.resolveAllocPosix(report.arena, &.{ dir, target });
-        if (!repo.exists(io, resolved)) try report.add(
-            "{s}: broken link '{s}'",
+        const found = switch (try links.classify(report.arena, path, target_raw)) {
+            .skip => true,
+            .file => |file| repo.exists(io, file),
+            .route => |base| routeExists(io, try links.routeCandidates(report.arena, base)),
+        };
+        if (!found) try report.add("{s}: broken link '{s}'", .{ path, target_raw });
+        if (locales.crossesLocale(path, target_raw)) try report.add(
+            "{s}: link '{s}' leaves the page's locale",
             .{ path, target_raw },
         );
     }
 }
 
-fn isExternal(target: []const u8) bool {
-    const schemes = [_][]const u8{ "http://", "https://", "mailto:", "#", "<" };
-    for (schemes) |scheme| {
-        if (std.mem.startsWith(u8, target, scheme)) return true;
+fn routeExists(io: std.Io, candidates: [4][]const u8) bool {
+    for (candidates) |candidate| {
+        if (repo.exists(io, candidate)) return true;
     }
     return false;
 }
@@ -230,9 +257,21 @@ pub fn forbiddenHost(bytes: []const u8) ?[]const u8 {
         if (!scheme_ok) continue;
         var end: usize = 0;
         while (end < rest.len and isHostByte(rest[end])) end += 1;
-        const host = rest[0..end];
+        // A URL that ends a sentence is followed by a period that is not part of the host.
+        const host = std.mem.trimEnd(u8, rest[0..end], ".");
         // Empty hosts are scheme prefixes and format strings such as "http://{s}".
         if (host.len > 0 and !isAllowedHost(host)) return host;
+    }
+    return null;
+}
+
+/// npm lockfiles also carry upstream `funding` links; only `resolved` URLs say where packages
+/// are downloaded from, which is where a private registry mirror would show up.
+pub fn forbiddenLockfileHost(bytes: []const u8) ?[]const u8 {
+    var lines = std.mem.splitScalar(u8, bytes, '\n');
+    while (lines.next()) |line| {
+        if (std.mem.find(u8, line, "\"resolved\":") == null) continue;
+        if (forbiddenHost(line)) |host| return host;
     }
     return null;
 }
@@ -272,6 +311,48 @@ test "only allowed url hosts" {
     try std.testing.expectEqualStrings("mirror.example.net", forbiddenHost(
         "[m](http:" ++ "//mirror.example.net/)",
     ).?);
+}
+
+test {
+    _ = links;
+    _ = locales;
+}
+
+test "the user documentation site host is allowed" {
+    try std.testing.expectEqual(@as(?[]const u8, null), forbiddenHost(
+        "site: 'https://niobium-project.dev', see https://niobium-project.dev/start/",
+    ));
+}
+
+test "a sentence-ending period is not part of the host" {
+    try std.testing.expectEqual(@as(?[]const u8, null), forbiddenHost(
+        "It is published at https://niobium-project.dev. Maintainer docs stay here.",
+    ));
+    // Split so this file does not trip its own scan.
+    try std.testing.expectEqualStrings("git.corp.internal", forbiddenHost(
+        "the mirror is https:" ++ "//git.corp.internal.",
+    ).?);
+}
+
+test "npm lockfiles are checked by resolved URLs only" {
+    // Split so this file does not trip its own scan.
+    const lock = "\"node_modules/a\": {\n" ++
+        "  \"resolved\": \"https://registry.npmjs.org/a/-/a-1.0.0.tgz\",\n" ++
+        "  \"funding\": { \"url\": \"https:" ++ "//opencollective.com/a\" }\n";
+    try std.testing.expectEqual(@as(?[]const u8, null), forbiddenLockfileHost(lock));
+    const mirror = "  \"resolved\": \"https:" ++ "//npm.corp.internal/a/-/a-1.0.0.tgz\",\n";
+    try std.testing.expectEqualStrings("npm.corp.internal", forbiddenLockfileHost(mirror).?);
+    try std.testing.expect(isLockfile("apps/user-docs/package-lock.json"));
+    try std.testing.expect(!isLockfile("apps/user-docs/package.json"));
+}
+
+test "site sources and workflows are scanned, mdx is markdown" {
+    try std.testing.expect(isText(".github/workflows/user-docs.yml"));
+    try std.testing.expect(isText("apps/user-docs/astro.config.mjs"));
+    try std.testing.expect(isText("apps/user-docs/src/components/VersionSelect.astro"));
+    try std.testing.expect(isText("apps/user-docs/src/content.config.ts"));
+    try std.testing.expect(isMarkdown("apps/user-docs/src/content/docs/index.mdx"));
+    try std.testing.expect(!isMarkdown("apps/user-docs/package.json"));
 }
 
 test "spec filenames need a version" {

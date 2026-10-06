@@ -8,7 +8,11 @@
         "build.zig",
         "build.zig.zon",
         "build",
-        "apps",
+        // apps/user-docs is the documentation site (Node.js), not part of the package.
+        "apps/setup",
+        "apps/nbpack",
+        "apps/libdistribution",
+        "apps/ui-workbench",
         "libs",
         "api",
         "third_party",
