@@ -21,3 +21,5 @@ Numbers are assigned once and never reused or renumbered. Template: title `# ADR
 | [0015](0015-node-toolchain-for-user-docs.md) | Node.js toolchain for the user documentation site | Accepted; amended by 0017 |
 | [0016](0016-documentation-lifecycle.md) | Documentation lifecycle | Accepted |
 | [0017](0017-chinese-user-documentation.md) | Chinese user documentation | Accepted |
+| [0018](0018-built-in-feature-modules.md) | Built-in feature modules | Proposed |
+| [0019](0019-presets-and-themes.md) | Presets and themes | Proposed |
