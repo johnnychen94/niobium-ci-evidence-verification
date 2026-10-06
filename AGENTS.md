@@ -8,7 +8,7 @@ Current explicit user instruction > this file > accepted ADRs > versioned specs 
 
 - `docs/source/` is the original architecture input, a read-only archive; current decisions are the ADRs and specs.
 - `docs/implementation/YYYY-MM-DD-*.md` are implementation traces; they go stale and are not a source of truth.
-- Docs, skills, code comments and commit summaries are written in English. [README.zh.md](README.zh.md) is the only Chinese document and must track [README.md](README.md). APIs, code identifiers and JSON fields are English.
+- Docs, skills, code comments and commit summaries are written in English. The only Chinese documents are [README.zh.md](README.zh.md), which must track [README.md](README.md), and the user site's Chinese pages, which mirror its English pages ([ADR-0017](docs/adr/0017-chinese-user-documentation.md)). APIs, code identifiers and JSON fields are English.
 - The repository is public. It must not reference internal or private hosts, mirrors or organizations; `tools/check-docs` enforces part of this.
 
 ## 2. Inviolable principles
