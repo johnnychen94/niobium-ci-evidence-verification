@@ -1,8 +1,18 @@
 #!/bin/sh
 # Classify a pull request or push for the CI workflow. Writes code, ui, and host
 # to GITHUB_OUTPUT. code selects test and c-smoke; ui also selects golden;
-# host selects the Windows and macOS jobs.
+# host selects the Windows and macOS jobs. A manual run exercises the code path
+# without the host machines.
 set -eu
+
+if [ "$GITHUB_EVENT_NAME" = "workflow_dispatch" ]; then
+    {
+        echo "code=true"
+        echo "ui=false"
+        echo "host=false"
+    } >>"$GITHUB_OUTPUT"
+    exit 0
+fi
 
 code=false
 ui=false
