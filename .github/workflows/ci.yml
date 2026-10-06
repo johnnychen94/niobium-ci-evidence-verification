@@ -84,7 +84,22 @@ jobs:
       - uses: ./.github/actions/zig
         with:
           mode: restore
-      - run: sudo apt-get update && sudo apt-get install -y kcov
+      - run: sudo apt-get update && sudo apt-get install -y libdw-dev
+      - id: kcov-cache
+        uses: actions/cache/restore@caa296126883cff596d87d8935842f9db880ef25 # v5.1.0
+        with:
+          path: ${{ runner.temp }}/kcov
+          key: kcov-v43-${{ runner.os }}-${{ runner.arch }}
+      - if: steps.kcov-cache.outputs.cache-hit != 'true'
+        env:
+          KCOV_PREFIX: ${{ runner.temp }}/kcov
+        run: sh .github/ci/install-kcov.sh
+      - if: steps.kcov-cache.outputs.cache-hit != 'true' && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository)
+        uses: actions/cache/save@caa296126883cff596d87d8935842f9db880ef25 # v5.1.0
+        with:
+          path: ${{ runner.temp }}/kcov
+          key: kcov-v43-${{ runner.os }}-${{ runner.arch }}
+      - run: echo "${{ runner.temp }}/kcov/bin" >> "$GITHUB_PATH"
       - run: zig build test -Dcoverage
       - uses: codecov/codecov-action@0fb7174895f61a3b6b78fc075e0cd60383518dac # v5.5.5
         with:
