@@ -35,9 +35,14 @@ zig-out/example/setup install --silent --scope user
 zig-out/example/setup status --json
 ```
 
+## Background
+
+Niobium is a hobby project that the author works on while employed at TongYuan. It is not part of TongYuan's commercial products; it exists to support creating installers for TongYuan products, whether internal, experimental or commercial. TongYuan gives the project no direct support or steering, so maintenance is best effort and the platform list is kept short on purpose: see [About the project](apps/user-docs/src/content/docs/about.md) and [Platform support](apps/user-docs/src/content/docs/platforms.md).
+
 ## Documentation
 
 - User documentation (English and Chinese): https://niobium-project.dev
+- Platform tiers and roadmap: [Platform support](apps/user-docs/src/content/docs/platforms.md)
 - Conventions: [AGENTS.md](AGENTS.md)
 - Glossary: [GLOSSARY.md](GLOSSARY.md)
 - Docs index: [docs/README.md](docs/README.md)

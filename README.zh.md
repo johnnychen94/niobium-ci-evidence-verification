@@ -35,11 +35,16 @@ zig-out/example/setup install --silent --scope user
 zig-out/example/setup status --json
 ```
 
+## 背景
+
+Niobium 是作者在同元软控工作期间开发的业余项目。它不属于同元软控的商业产品，诞生的目的是为同元软控的产品（内部、实验性或商业产品）制作安装程序提供支持。同元软控不对本项目提供直接支持或方向指导，因此维护以尽力而为为原则，支持的平台也刻意保持精简：参见 [About the project](apps/user-docs/src/content/docs/about.md) 与 [Platform support](apps/user-docs/src/content/docs/platforms.md)。
+
 ## 文档
 
 除用户文档网站外，其余文档均为英文。
 
 - 用户文档（中英文）：https://niobium-project.dev/zh/
+- 平台分级与路线图：[Platform support](apps/user-docs/src/content/docs/platforms.md)
 - 约定：[AGENTS.md](AGENTS.md)
 - 术语：[GLOSSARY.md](GLOSSARY.md)
 - 文档索引：[docs/README.md](docs/README.md)
