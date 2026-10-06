@@ -1,0 +1,5 @@
+window "Hello Setup" 0,0 640x460
+  text "Hello is installed" 24,24 592x26
+  text "Hello is ready to use. Updates are verified and applied the same way." 24,66 592x18
+  button #done "Close" 427,408 80x28 focusable +press
+  button #launch "Open Hello" 515,408 101x28 focusable +press

@@ -1,0 +1,57 @@
+.{
+    .components = .{
+        .{
+            .name = "button-primary",
+            .states = .{ .default, .hover, .pressed, .focus, .disabled },
+            .content = .{ .long, .cjk, .rtl },
+        },
+        .{
+            .name = "button-secondary",
+            .states = .{ .default, .hover, .pressed, .focus, .disabled },
+            .content = .{ .long, .rtl },
+        },
+        .{
+            .name = "checkbox",
+            .states = .{ .default, .checked, .hover, .focus, .disabled },
+            .content = .{ .long, .cjk, .rtl },
+            .height = 80,
+        },
+        .{
+            .name = "radio",
+            .states = .{ .default, .hover, .focus, .disabled },
+            .content = .{ .cjk, .rtl },
+            .height = 72,
+        },
+        .{
+            .name = "link",
+            .states = .{ .default, .hover, .focus, .disabled },
+            .content = .{.rtl},
+        },
+        .{
+            .name = "text",
+            .states = .{.default},
+            .content = .{ .long, .cjk, .rtl },
+            .width = 320,
+            .height = 160,
+        },
+        .{
+            .name = "folder-picker",
+            .states = .{ .default, .hover, .focus, .disabled, .fallback },
+            .content = .{ .long, .rtl },
+            .width = 320,
+            .height = 80,
+        },
+        .{
+            .name = "progress-bar",
+            .states = .{ .default, .disabled },
+            .content = .{.rtl},
+            .height = 32,
+        },
+        .{ .name = "progress-ring", .states = .{.default}, .width = 64 },
+        .{ .name = "card", .states = .{.default}, .content = .{.rtl}, .height = 96 },
+        .{ .name = "divider", .states = .{.default}, .height = 32 },
+        .{ .name = "image", .states = .{.default}, .width = 80, .height = 80 },
+        .{ .name = "scroll", .states = .{.default}, .content = .{.rtl}, .height = 96 },
+        .{ .name = "modal", .states = .{.default}, .width = 360, .height = 200 },
+    },
+}

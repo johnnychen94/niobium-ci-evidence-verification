@@ -1,0 +1,12 @@
+window w=fill h=fill "Hello Setup"
+  stack column gap=lg pad=xl align=start w=fill h=fill
+    text title normal w=fill h=content "Installing Hello"
+    stack column gap=sm pad=none align=start w=fill h=content
+      stack row gap=sm pad=none align=center w=fill h=content
+        text body muted w=fill h=content "Downloading"
+      progress_bar 37% w=fill h=content "Downloading"
+      text caption muted w=fill h=content "hello-1.0.0.tar.zst"
+    spacer w=content h=fill
+    stack row gap=md pad=none align=start w=fill h=content
+      spacer w=fill h=content
+      button #cancel secondary action=cancel w=content h=content "Cancel"

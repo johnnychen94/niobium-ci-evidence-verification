@@ -1,0 +1,238 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://niobium.dev/schema/manifest-v1.schema.json",
+  "title": "manifest-v1",
+  "type": "object",
+  "properties": {
+    "schema": {
+      "const": 1
+    },
+    "min_installer": {
+      "type": "string"
+    },
+    "product": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z0-9.-]{3,128}$"
+        },
+        "name": {
+          "type": "string"
+        },
+        "publisher": {
+          "type": "string"
+        },
+        "version": {
+          "type": "string"
+        },
+        "release_sequence": {
+          "type": "integer",
+          "minimum": 1
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "name",
+        "publisher",
+        "version",
+        "release_sequence"
+      ]
+    },
+    "install": {
+      "type": "object",
+      "properties": {
+        "default_scope": {
+          "enum": [
+            "user",
+            "machine"
+          ]
+        },
+        "allowed_scopes": {
+          "type": "array",
+          "items": {
+            "enum": [
+              "user",
+              "machine"
+            ]
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "default_scope",
+        "allowed_scopes"
+      ]
+    },
+    "components": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[a-z0-9_-]{1,64}$"
+          },
+          "title": {
+            "type": "string"
+          },
+          "required": {
+            "type": "boolean"
+          },
+          "default": {
+            "type": "boolean"
+          },
+          "artifacts": {
+            "type": "object",
+            "patternProperties": {
+              "^(macos|windows|linux)-(aarch64|x86_64)$": {
+                "type": "string",
+                "pattern": "^sha256:[0-9a-f]{64}$"
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "title",
+          "artifacts"
+        ]
+      },
+      "minItems": 1,
+      "maxItems": 64
+    },
+    "integrations": {
+      "type": "object",
+      "properties": {
+        "shortcuts": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "entrypoint": {
+                "type": "string",
+                "pattern": "^[a-z0-9_-]{1,64}\\.[a-z0-9_-]{1,64}$"
+              }
+            },
+            "additionalProperties": false,
+            "required": [
+              "name",
+              "entrypoint"
+            ]
+          },
+          "maxItems": 32
+        },
+        "file_associations": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "extension": {
+                "type": "string",
+                "pattern": "^\\.[a-z0-9]{1,16}$"
+              },
+              "entrypoint": {
+                "type": "string",
+                "pattern": "^[a-z0-9_-]{1,64}\\.[a-z0-9_-]{1,64}$"
+              },
+              "description": {
+                "type": "string"
+              }
+            },
+            "additionalProperties": false,
+            "required": [
+              "extension",
+              "entrypoint",
+              "description"
+            ]
+          },
+          "maxItems": 32
+        },
+        "services": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "pattern": "^[a-z0-9_-]{1,64}$"
+              },
+              "entrypoint": {
+                "type": "string",
+                "pattern": "^[a-z0-9_-]{1,64}\\.[a-z0-9_-]{1,64}$"
+              },
+              "start": {
+                "enum": [
+                  "auto",
+                  "manual"
+                ]
+              }
+            },
+            "additionalProperties": false,
+            "required": [
+              "id",
+              "entrypoint",
+              "start"
+            ]
+          },
+          "maxItems": 32
+        }
+      },
+      "additionalProperties": false,
+      "required": []
+    },
+    "bootstrap": {
+      "type": "object",
+      "properties": {
+        "entrypoint": {
+          "type": "string",
+          "pattern": "^[a-z0-9_-]{1,64}\\.[a-z0-9_-]{1,64}$"
+        },
+        "protocol": {
+          "const": 1
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "entrypoint",
+        "protocol"
+      ]
+    },
+    "experience": {
+      "type": "object",
+      "properties": {
+        "accent": {
+          "type": "string",
+          "pattern": "^#[0-9A-Fa-f]{6}$"
+        },
+        "license_text": {
+          "type": "string"
+        },
+        "welcome_text": {
+          "type": "string"
+        },
+        "icon_png": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "required": []
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "min_installer",
+    "product",
+    "install",
+    "components"
+  ]
+}

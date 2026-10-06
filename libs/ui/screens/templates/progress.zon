@@ -1,0 +1,78 @@
+.{
+    .kind = .window,
+    .title = "{product_name} Setup",
+    .children = .{
+        .{
+            .kind = .stack,
+            .padding = .xl,
+            .gap = .lg,
+            .height = .fill,
+            .children = .{
+                .{ .kind = .text, .style = .title, .text = "{progress_title}", .width = .fill },
+                .{
+                    .kind = .stack,
+                    .gap = .sm,
+                    .width = .fill,
+                    .children = .{
+                        .{
+                            .kind = .stack,
+                            .axis = .row,
+                            .gap = .sm,
+                            .alignment = .center,
+                            .children = .{
+                                .{ .kind = .progress_ring, .label = "{phase_label}", .visible_bind = "progress_unknown" },
+                                .{ .kind = .text, .tone = .muted, .text = "{phase_label}", .width = .fill },
+                            },
+                        },
+                        .{
+                            .kind = .progress_bar,
+                            .label = "{phase_label}",
+                            .bind = "progress",
+                            .width = .fill,
+                            .visible_bind = "progress_known",
+                        },
+                        .{ .kind = .text, .style = .caption, .tone = .muted, .text = "{status_detail}", .width = .fill },
+                    },
+                },
+                .{ .kind = .spacer, .height = .fill },
+                .{
+                    .kind = .stack,
+                    .axis = .row,
+                    .children = .{
+                        .{ .kind = .spacer, .width = .fill },
+                        .{
+                            .kind = .button,
+                            .id = "cancel",
+                            .label = "Cancel",
+                            .action = .cancel,
+                            .enabled_bind = "can_cancel",
+                        },
+                    },
+                },
+            },
+        },
+        .{
+            .kind = .modal,
+            .title = "Stop setup?",
+            .visible_bind = "confirm_cancel",
+            .children = .{
+                .{ .kind = .text, .style = .heading, .text = "Stop setup?" },
+                .{
+                    .kind = .text,
+                    .text = "Changes made so far are rolled back. {product_name} stays as it was before.",
+                    .width = .fill,
+                },
+                .{
+                    .kind = .stack,
+                    .axis = .row,
+                    .gap = .sm,
+                    .children = .{
+                        .{ .kind = .spacer, .width = .fill },
+                        .{ .kind = .button, .id = "stop", .label = "Stop", .action = .cancel },
+                        .{ .kind = .button, .id = "keep", .label = "Continue", .variant = .primary, .action = .back },
+                    },
+                },
+            },
+        },
+    },
+}

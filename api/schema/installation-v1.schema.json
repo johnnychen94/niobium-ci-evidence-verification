@@ -1,0 +1,109 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://niobium.dev/schema/installation-v1.schema.json",
+  "title": "installation-v1",
+  "type": "object",
+  "properties": {
+    "schema": {
+      "const": 1
+    },
+    "product_id": {
+      "type": "string"
+    },
+    "product_name": {
+      "type": "string"
+    },
+    "scope": {
+      "enum": [
+        "user",
+        "machine"
+      ]
+    },
+    "channel": {
+      "enum": [
+        "stable",
+        "beta",
+        "nightly"
+      ]
+    },
+    "release_sequence": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "app_version": {
+      "type": "string"
+    },
+    "active_tx": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "installer_version": {
+      "type": "string"
+    },
+    "components": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "manifest_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "bootstrap": {
+      "enum": [
+        "none",
+        "done",
+        "pending"
+      ]
+    },
+    "bootstrap_target": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "integrations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "kind": {
+            "enum": [
+              "shortcut",
+              "file_association",
+              "service",
+              "registration"
+            ]
+          },
+          "id": {
+            "type": "string"
+          },
+          "location": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "kind",
+          "id",
+          "location"
+        ]
+      }
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "product_id",
+    "product_name",
+    "scope",
+    "channel",
+    "release_sequence",
+    "app_version",
+    "active_tx",
+    "installer_version",
+    "components",
+    "manifest_sha256"
+  ]
+}

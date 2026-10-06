@@ -1,0 +1,6 @@
+window "Hello Setup" 0,0 640x460
+  text "Installation failed" 24,24 592x26
+  text "A downloaded file did not match the signed release. Nothing was changed." 24,66 592x18
+  text "Error code: TrustHashMismatch" 24,100 592x14
+  button #close "Close" 438,408 80x28 focusable +press
+  button #retry "Try again" 526,408 90x28 focusable +press

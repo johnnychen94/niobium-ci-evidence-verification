@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://niobium.dev/schema/trust-state-v1.schema.json",
+  "title": "trust-state-v1",
+  "type": "object",
+  "properties": {
+    "schema": {
+      "const": 1
+    },
+    "root_version": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "timestamp_version": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "snapshot_version": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "targets_version": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "channel_version": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "release_sequence": {
+      "type": "integer",
+      "minimum": 0
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "root_version",
+    "timestamp_version",
+    "snapshot_version",
+    "targets_version",
+    "channel_version",
+    "release_sequence"
+  ]
+}

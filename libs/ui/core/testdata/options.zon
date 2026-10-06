@@ -1,0 +1,92 @@
+.{
+    .kind = .window,
+    .title = "Install {product_name}",
+    .children = .{
+        .{
+            .kind = .stack,
+            .padding = .xl,
+            .height = .fill,
+            .children = .{
+                .{ .kind = .text, .style = .title, .text = "Welcome to {product_name}" },
+                .{ .kind = .text, .tone = .muted, .text = "{summary}" },
+                .{
+                    .kind = .checkbox,
+                    .id = "shortcut",
+                    .label = "Create a desktop shortcut",
+                    .bind = "shortcut",
+                },
+                .{
+                    .kind = .radio_group,
+                    .id = "scope",
+                    .label = "Install for",
+                    .bind = "scope",
+                    .options = .{
+                        .{ .value = "user", .label = "Just me" },
+                        .{ .value = "machine", .label = "All users" },
+                    },
+                },
+                .{
+                    .kind = .folder_picker,
+                    .id = "location",
+                    .label = "Location",
+                    .bind = "location",
+                    .fallback = .text,
+                },
+                .{
+                    .kind = .progress_bar,
+                    .label = "Installing",
+                    .bind = "progress",
+                    .visible_bind = "busy",
+                },
+                .{ .kind = .spacer, .height = .fill },
+                .{
+                    .kind = .stack,
+                    .axis = .row,
+                    .alignment = .center,
+                    .children = .{
+                        .{ .kind = .link, .id = "license", .label = "License", .action = .show_license },
+                        .{ .kind = .spacer, .width = .fill },
+                        .{ .kind = .button, .id = "cancel", .label = "Cancel", .action = .cancel },
+                        .{
+                            .kind = .button,
+                            .id = "install",
+                            .label = "Install",
+                            .variant = .primary,
+                            .action = .install,
+                            .enabled_bind = "can_install",
+                        },
+                    },
+                },
+            },
+        },
+        .{
+            .kind = .modal,
+            .title = "Cancel installation?",
+            .visible_bind = "confirm_cancel",
+            .children = .{
+                .{ .kind = .text, .style = .heading, .text = "Cancel installation?" },
+                .{
+                    .kind = .scroll,
+                    .id = "details",
+                    .max_height = .logo,
+                    .children = .{.{ .kind = .text, .text = "{details}" }},
+                },
+                .{
+                    .kind = .stack,
+                    .axis = .row,
+                    .children = .{
+                        .{ .kind = .spacer, .width = .fill },
+                        .{ .kind = .button, .id = "keep", .label = "Continue", .action = .back },
+                        .{
+                            .kind = .button,
+                            .id = "stop",
+                            .label = "Stop",
+                            .variant = .primary,
+                            .action = .close,
+                        },
+                    },
+                },
+            },
+        },
+    },
+}

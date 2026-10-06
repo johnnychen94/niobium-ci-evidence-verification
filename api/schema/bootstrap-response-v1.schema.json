@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://niobium.dev/schema/bootstrap-response-v1.schema.json",
+  "title": "bootstrap-response-v1",
+  "type": "object",
+  "properties": {
+    "protocol": {
+      "const": 1
+    },
+    "status": {
+      "enum": [
+        "ok",
+        "error"
+      ]
+    },
+    "message": {
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "protocol",
+    "status"
+  ]
+}

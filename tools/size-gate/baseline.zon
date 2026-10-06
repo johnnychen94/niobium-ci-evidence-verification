@@ -1,0 +1,9 @@
+// ReleaseSafe setup sizes. Growth over 5% fails `zig build size-gate`.
+// Rewrite with `zig build size-gate -- --write` in the commit that explains it.
+.{
+    .targets = .{
+        .{ .name = "x86_64-windows", .bytes = 2585600 },
+        .{ .name = "aarch64-macos", .bytes = 2140504 },
+        .{ .name = "x86_64-linux", .bytes = 2047888 },
+    },
+}

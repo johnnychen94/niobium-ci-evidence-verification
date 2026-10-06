@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://niobium.dev/schema/bootstrap-request-v1.schema.json",
+  "title": "bootstrap-request-v1",
+  "type": "object",
+  "properties": {
+    "protocol": {
+      "const": 1
+    },
+    "operation": {
+      "enum": [
+        "activate",
+        "deactivate"
+      ]
+    },
+    "transaction_id": {
+      "type": "string"
+    },
+    "from_version": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "to_version": {
+      "type": "string"
+    },
+    "scope": {
+      "enum": [
+        "user",
+        "machine"
+      ]
+    },
+    "install_root": {
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "protocol",
+    "operation",
+    "transaction_id",
+    "from_version",
+    "to_version",
+    "scope",
+    "install_root"
+  ]
+}

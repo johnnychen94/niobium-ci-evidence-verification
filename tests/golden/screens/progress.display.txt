@@ -1,0 +1,9 @@
+fill 0,0 640x460 r0 #FFFFFFFF
+text 24,24 lh26 title/20 #1C1C1EFF "Installing Hello"
+text 24,66 lh18 body/13 #5B5B63FF "Downloading"
+fill 24,92 592x6 r3 #E2E2E7FF
+fill 24,92 219x6 r3 #0B63CEFF
+text 24,106 lh14 caption/11 #5B5B63FF "hello-1.0.0.tar.zst"
+fill 536,408 80x28 r6 #FFFFFFFF
+stroke 536,408 80x28 r6 w1 #C7C7CFFF
+text 554,413 lh18 body/13 #1C1C1EFF "Cancel"

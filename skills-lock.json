@@ -1,0 +1,35 @@
+{
+  "version": 1,
+  "skills": {
+    "apple-hig": {
+      "source": "justinwetch/higagentskills",
+      "sourceType": "github",
+      "skillPath": "SKILL.md",
+      "computedHash": "5e395a22edb136451d29001468edc8db9faa200373ab58a4dbc7ffc3eb64f5fd"
+    },
+    "gtk-ui-ux-engineer": {
+      "source": "gotar/opencode-config",
+      "sourceType": "github",
+      "skillPath": "skills/gtk-ui-ux-engineer/SKILL.md",
+      "computedHash": "65d642caaa3497175d18463a4ae111ea832f870b686bdf3151930bfdda7d06e9"
+    },
+    "winui-app": {
+      "source": "openai/skills",
+      "sourceType": "github",
+      "skillPath": "skills/.curated/winui-app/SKILL.md",
+      "computedHash": "6231a756230fbf412b05e38249d47c3ced6ab51944bcfb6ea3452f026bcbe848"
+    },
+    "zig-0.17": {
+      "source": "zigcc/skills",
+      "sourceType": "github",
+      "skillPath": "zig-0.17/SKILL.md",
+      "computedHash": "efa58c988ff3e8d18dcbeb2249113fec9f7c034868c49ae7e4ceed5916320732"
+    },
+    "zig-tiger-style": {
+      "source": "zigcc/skills",
+      "sourceType": "github",
+      "skillPath": "zig-tiger-style/SKILL.md",
+      "computedHash": "27d1768d9a4c70ff374c99b4fa9d983dc6c0ac7b207ab576e00c4402475399c0"
+    }
+  }
+}

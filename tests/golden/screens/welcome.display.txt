@@ -1,0 +1,11 @@
+fill 0,0 640x460 r0 #FFFFFFFF
+text 24,24 lh26 title/20 #1C1C1EFF "Welcome to Hello"
+text 24,54 lh14 caption/11 #5B5B63FF "Example Software Ltd."
+text 24,84 lh18 body/13 #1C1C1EFF "Setup will install Hello on this computer. Every download is verified before anything is changed."
+text 24,118 lh18 body/13 #0B63CEFF underline "View license agreement"
+text 24,415 lh14 caption/11 #5B5B63FF "Version 1.0.0"
+fill 448,408 80x28 r6 #FFFFFFFF
+stroke 448,408 80x28 r6 w1 #C7C7CFFF
+text 466,413 lh18 body/13 #1C1C1EFF "Cancel"
+fill 536,408 80x28 r6 #0B63CEFF
+text 561,413 lh18 body/13 #FFFFFFFF "Next"

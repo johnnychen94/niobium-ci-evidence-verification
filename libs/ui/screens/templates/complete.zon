@@ -1,0 +1,42 @@
+.{
+    .kind = .window,
+    .title = "{product_name} Setup",
+    .children = .{
+        .{
+            .kind = .stack,
+            .padding = .xl,
+            .gap = .lg,
+            .height = .fill,
+            .children = .{
+                .{ .kind = .text, .style = .title, .tone = .success, .text = "{complete_title}", .width = .fill },
+                .{ .kind = .text, .text = "{complete_body}", .width = .fill },
+                .{ .kind = .spacer, .height = .fill },
+                .{
+                    .kind = .stack,
+                    .axis = .row,
+                    .gap = .sm,
+                    .children = .{
+                        .{ .kind = .spacer, .width = .fill },
+                        .{ .kind = .button, .id = "done", .label = "Close", .action = .close, .visible_bind = "can_launch" },
+                        .{
+                            .kind = .button,
+                            .id = "launch",
+                            .label = "Open {product_name}",
+                            .variant = .primary,
+                            .action = .launch,
+                            .visible_bind = "can_launch",
+                        },
+                        .{
+                            .kind = .button,
+                            .id = "finish",
+                            .label = "Close",
+                            .variant = .primary,
+                            .action = .close,
+                            .visible_bind = "no_launch",
+                        },
+                    },
+                },
+            },
+        },
+    },
+}

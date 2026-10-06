@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://niobium.dev/schema/journal-record-v1.schema.json",
+  "title": "journal-record-v1",
+  "type": "object",
+  "properties": {
+    "r": {
+      "enum": [
+        "begin",
+        "op_done",
+        "op_undone",
+        "ready_to_commit",
+        "commit",
+        "bootstrap_started",
+        "bootstrap_done",
+        "finalized",
+        "rolled_back"
+      ]
+    },
+    "tx": {
+      "type": "string"
+    },
+    "seq": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "kind": {
+      "enum": [
+        "install",
+        "update",
+        "repair",
+        "uninstall"
+      ]
+    },
+    "from": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "i": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "ok": {
+      "type": "boolean"
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "r"
+  ]
+}

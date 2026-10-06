@@ -1,0 +1,9 @@
+window w=fill h=fill "Hello Setup"
+  stack column gap=lg pad=xl align=start w=fill h=fill
+    text title success w=fill h=content "Hello is installed"
+    text body normal w=fill h=content "Hello is ready to use. Updates are verified and applied the same way."
+    spacer w=content h=fill
+    stack row gap=sm pad=none align=start w=fill h=content
+      spacer w=fill h=content
+      button #done secondary action=close w=content h=content "Close"
+      button #launch primary action=launch w=content h=content "Open Hello"

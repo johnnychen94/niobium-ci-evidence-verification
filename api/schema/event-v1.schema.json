@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://niobium.dev/schema/event-v1.schema.json",
+  "title": "event-v1",
+  "type": "object",
+  "properties": {
+    "schema": {
+      "const": 1
+    },
+    "phase": {
+      "enum": [
+        "recover",
+        "discover",
+        "validate",
+        "resolve",
+        "plan",
+        "prepare",
+        "download",
+        "verify",
+        "execute",
+        "commit",
+        "bootstrap",
+        "verify_install",
+        "finalize",
+        "complete",
+        "error"
+      ]
+    },
+    "progress": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "code": {
+      "type": "string"
+    },
+    "message": {
+      "type": "string"
+    },
+    "exit_code": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 13
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "phase"
+  ]
+}

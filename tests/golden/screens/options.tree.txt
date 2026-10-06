@@ -1,0 +1,14 @@
+window w=fill h=fill "Hello Setup"
+  stack column gap=lg pad=xl align=start w=fill h=fill
+    text title normal w=fill h=content "Installation options"
+    radio_group #scope gap=xs pad=none align=start w=content h=content "Install for"
+      radio_option 0 selected w=content h=content "Just me"
+      radio_option 1 w=content h=content "Everyone on this computer"
+    folder_picker #location path="/Users/me/Applications/Hello" w=fill h=content "Install location"
+    text caption muted w=fill h=content "By continuing you accept the license agreement of Hello."
+    spacer w=content h=fill
+    stack row gap=sm pad=none align=start w=fill h=content
+      spacer w=fill h=content
+      button #back secondary action=back w=content h=content "Back"
+      button #cancel secondary action=cancel w=content h=content "Cancel"
+      button #install primary action=install w=content h=content "Install"

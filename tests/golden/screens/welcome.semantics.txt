@@ -1,0 +1,8 @@
+window "Hello Setup" 0,0 640x460
+  text "Welcome to Hello" 24,24 592x26
+  text "Example Software Ltd." 24,54 118x14
+  text "Setup will install Hello on this computer. Every download is verified before anything is changed." 24,84 592x18
+  link #license "View license agreement" 24,118 148x18 focusable +press
+  text "Version 1.0.0" 24,415 67x14
+  button #cancel "Cancel" 448,408 80x28 focusable +press
+  button #next "Next" 536,408 80x28 focusable +press

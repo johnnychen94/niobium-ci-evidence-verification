@@ -1,0 +1,9 @@
+{
+  "product_name": "Hello",
+  "publisher": "Example Inc.",
+  "accent": "#3B5BDB",
+  "welcome_title": "Install Hello",
+  "welcome_body": "Hello is a sample product built with the Niobium installer framework.",
+  "complete_body": "Hello is ready. Run it from the install folder.",
+  "license": "Hello sample license: use it for anything. Provided as is, without warranty."
+}

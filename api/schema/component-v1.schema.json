@@ -1,0 +1,56 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://niobium.dev/schema/component-v1.schema.json",
+  "title": "component-v1",
+  "type": "object",
+  "properties": {
+    "schema": {
+      "const": 1
+    },
+    "id": {
+      "type": "string"
+    },
+    "version": {
+      "type": "string"
+    },
+    "platform": {
+      "type": "string",
+      "pattern": "^(macos|windows|linux)-(aarch64|x86_64)$"
+    },
+    "entrypoints": {
+      "type": "object",
+      "patternProperties": {
+        "^[a-z0-9_-]{1,64}$": {
+          "type": "object",
+          "properties": {
+            "path": {
+              "type": "string"
+            },
+            "bootstrap": {
+              "type": "boolean"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "path"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "executables": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "id",
+    "version",
+    "platform",
+    "entrypoints"
+  ]
+}

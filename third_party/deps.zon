@@ -1,0 +1,66 @@
+// Pinned third-party sources (docs/adr/0011-third-party-fetch.md). `zig build` fetches each
+// package with tools/fetch-deps into the build cache, checks every sha256, then applies
+// `third_party/<name>/patches/<patch>` in order. Change a URL only together with its sha256.
+.{
+    .packages = .{
+        .{
+            .name = "zstd",
+            .version = "1.5.7",
+            .sources = .{
+                .{
+                    .url = "https://codeload.github.com/facebook/zstd/tar.gz/refs/tags/v1.5.7",
+                    .sha256 = "37d7284556b20954e56e1ca85b80226768902e2edabd3b649e9e72c0c9012ee3",
+                    .archive = .tar_gz,
+                    .strip_components = 1,
+                    .extract = .{
+                        "LICENSE",
+                        "lib/zstd.h",
+                        "lib/zstd_errors.h",
+                        "lib/common/",
+                        "lib/compress/",
+                    },
+                },
+            },
+            .patches = .{},
+        },
+        .{
+            .name = "stb_truetype",
+            .version = "2c980bb59875b0d32144a71867fbdebb2f77cd20",
+            .sources = .{
+                .{
+                    .url = "https://raw.githubusercontent.com/nothings/stb/2c980bb59875b0d32144a71867fbdebb2f77cd20/stb_truetype.h",
+                    .sha256 = "ecd30b05e0dd4fea3a13c26810dd9e1992dc379049482c393d5a19e6b5090aab",
+                    .file = "stb_truetype.h",
+                },
+                .{
+                    .url = "https://raw.githubusercontent.com/nothings/stb/2c980bb59875b0d32144a71867fbdebb2f77cd20/LICENSE",
+                    .sha256 = "bebfe904b14301657e4e5d655c811d51fd31b97c455b9cc2d8600d6bac6cff63",
+                    .file = "LICENSE",
+                },
+            },
+            .patches = .{},
+        },
+        .{
+            .name = "inter",
+            .version = "fontsource 5.3.0 (Inter 4.1)",
+            .sources = .{
+                .{
+                    .url = "https://cdn.jsdelivr.net/fontsource/fonts/inter@5.3.0/latin-400-normal.ttf",
+                    .sha256 = "7c7c718a62e315a83fb5b5b0b086028bae10fc153701cf0f0b168e5f5a0c28f9",
+                    .file = "Inter-Regular.ttf",
+                },
+                .{
+                    .url = "https://cdn.jsdelivr.net/fontsource/fonts/inter@5.3.0/latin-600-normal.ttf",
+                    .sha256 = "fb6efb6500fe6531b73c7a06d025ceaefc562ee03e9d840c76d48ee11e85b998",
+                    .file = "Inter-SemiBold.ttf",
+                },
+                .{
+                    .url = "https://raw.githubusercontent.com/rsms/inter/v4.1/LICENSE.txt",
+                    .sha256 = "262481e844521b326f5ecd053e59b98c8b2da78c8ee1bdbb6e8174305e54935a",
+                    .file = "LICENSE.txt",
+                },
+            },
+            .patches = .{},
+        },
+    },
+}

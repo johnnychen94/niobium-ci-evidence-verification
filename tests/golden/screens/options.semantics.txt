@@ -1,0 +1,10 @@
+window "Hello Setup" 0,0 640x460
+  text "Installation options" 24,24 592x26
+  radiogroup #scope "Install for" 24,66 190x40 focusable
+    radio "Just me" 24,66 73x18 selected +select
+    radio "Everyone on this computer" 24,88 190x18 +select
+  button #location "Install location" value="/Users/me/Applications/Hello" 24,122 592x50 focusable +press
+  text "By continuing you accept the license agreement of Hello." 24,188 592x14
+  button #back "Back" 360,408 80x28 focusable +press
+  button #cancel "Cancel" 448,408 80x28 focusable +press
+  button #install "Install" 536,408 80x28 focusable +press

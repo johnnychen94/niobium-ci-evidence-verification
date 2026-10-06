@@ -1,0 +1,18 @@
+.zig-cache/
+zig-out/
+.evidence/
+.local/
+*.key.json
+.DS_Store
+
+# External skills: pinned by skills-lock.json, restored with `npx skills experimental_install`.
+/.agents/skills/apple-hig/
+/.agents/skills/gtk-ui-ux-engineer/
+/.agents/skills/winui-app/
+/.agents/skills/zig-0.17/
+/.agents/skills/zig-tiger-style/
+/.claude/skills/apple-hig/
+/.claude/skills/gtk-ui-ux-engineer/
+/.claude/skills/winui-app/
+/.claude/skills/zig-0.17/
+/.claude/skills/zig-tiger-style/

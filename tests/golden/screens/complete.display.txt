@@ -1,0 +1,8 @@
+fill 0,0 640x460 r0 #FFFFFFFF
+text 24,24 lh26 title/20 #17723AFF "Hello is installed"
+text 24,66 lh18 body/13 #1C1C1EFF "Hello is ready to use. Updates are verified and applied the same way."
+fill 427,408 80x28 r6 #FFFFFFFF
+stroke 427,408 80x28 r6 w1 #C7C7CFFF
+text 449,413 lh18 body/13 #1C1C1EFF "Close"
+fill 515,408 101x28 r6 #0B63CEFF
+text 531,413 lh18 body/13 #FFFFFFFF "Open Hello"

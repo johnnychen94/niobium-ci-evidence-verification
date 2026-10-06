@@ -1,0 +1,10 @@
+window w=fill h=fill "Hello Setup"
+  stack column gap=lg pad=xl align=start w=fill h=fill
+    text title danger w=fill h=content "Installation failed"
+    text body normal w=fill h=content "A downloaded file did not match the signed release. Nothing was changed."
+    text caption muted w=fill h=content "Error code: TrustHashMismatch"
+    spacer w=content h=fill
+    stack row gap=sm pad=none align=start w=fill h=content
+      spacer w=fill h=content
+      button #close secondary action=close w=content h=content "Close"
+      button #retry primary action=retry w=content h=content "Try again"

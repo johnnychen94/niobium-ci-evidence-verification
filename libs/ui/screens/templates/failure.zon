@@ -1,0 +1,35 @@
+.{
+    .kind = .window,
+    .title = "{product_name} Setup",
+    .children = .{
+        .{
+            .kind = .stack,
+            .padding = .xl,
+            .gap = .lg,
+            .height = .fill,
+            .children = .{
+                .{ .kind = .text, .style = .title, .tone = .danger, .text = "{error_title}", .width = .fill },
+                .{ .kind = .text, .text = "{error_message}", .width = .fill },
+                .{ .kind = .text, .style = .caption, .tone = .muted, .text = "Error code: {error_code}", .width = .fill },
+                .{ .kind = .spacer, .height = .fill },
+                .{
+                    .kind = .stack,
+                    .axis = .row,
+                    .gap = .sm,
+                    .children = .{
+                        .{ .kind = .spacer, .width = .fill },
+                        .{ .kind = .button, .id = "close", .label = "Close", .action = .close },
+                        .{
+                            .kind = .button,
+                            .id = "retry",
+                            .label = "Try again",
+                            .variant = .primary,
+                            .action = .retry,
+                            .visible_bind = "can_retry",
+                        },
+                    },
+                },
+            },
+        },
+    },
+}

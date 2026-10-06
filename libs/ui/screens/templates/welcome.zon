@@ -1,0 +1,91 @@
+.{
+    .kind = .window,
+    .title = "{product_name} Setup",
+    .children = .{
+        .{
+            .kind = .stack,
+            .padding = .xl,
+            .gap = .lg,
+            .height = .fill,
+            .children = .{
+                .{
+                    .kind = .stack,
+                    .axis = .row,
+                    .gap = .md,
+                    .alignment = .center,
+                    .children = .{
+                        .{ .kind = .image, .source = .logo, .label = "{product_name}", .visible_bind = "has_logo" },
+                        .{
+                            .kind = .stack,
+                            .gap = .xs,
+                            .width = .fill,
+                            .children = .{
+                                .{ .kind = .text, .style = .title, .text = "{welcome_title}", .width = .fill },
+                                .{ .kind = .text, .style = .caption, .tone = .muted, .text = "{publisher}" },
+                            },
+                        },
+                    },
+                },
+                .{ .kind = .text, .text = "{welcome_body}", .width = .fill },
+                .{
+                    .kind = .link,
+                    .id = "license",
+                    .label = "View license agreement",
+                    .action = .show_license,
+                    .visible_bind = "has_license",
+                },
+                .{ .kind = .spacer, .height = .fill },
+                .{
+                    .kind = .stack,
+                    .axis = .row,
+                    .gap = .sm,
+                    .alignment = .center,
+                    .children = .{
+                        .{ .kind = .text, .style = .caption, .tone = .muted, .text = "Version {version}" },
+                        .{ .kind = .spacer, .width = .fill },
+                        .{ .kind = .button, .id = "cancel", .label = "Cancel", .action = .cancel },
+                        .{
+                            .kind = .button,
+                            .id = "next",
+                            .label = "Next",
+                            .variant = .primary,
+                            .action = .next,
+                            .visible_bind = "has_options",
+                        },
+                        .{
+                            .kind = .button,
+                            .id = "start",
+                            .label = "{action_label}",
+                            .variant = .primary,
+                            .action = .install,
+                            .visible_bind = "no_options",
+                        },
+                    },
+                },
+            },
+        },
+        .{
+            .kind = .modal,
+            .title = "License agreement",
+            .visible_bind = "show_license",
+            .children = .{
+                .{ .kind = .text, .style = .heading, .text = "License agreement" },
+                .{
+                    .kind = .scroll,
+                    .id = "license_text",
+                    .width = .fill,
+                    .max_height = .list,
+                    .children = .{.{ .kind = .text, .style = .mono, .text = "{license_text}", .width = .fill }},
+                },
+                .{
+                    .kind = .stack,
+                    .axis = .row,
+                    .children = .{
+                        .{ .kind = .spacer, .width = .fill },
+                        .{ .kind = .button, .id = "license_close", .label = "Close", .variant = .primary, .action = .close },
+                    },
+                },
+            },
+        },
+    },
+}

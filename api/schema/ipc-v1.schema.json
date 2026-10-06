@@ -1,0 +1,193 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://niobium.dev/schema/ipc-v1.schema.json",
+  "title": "ipc-v1",
+  "type": "object",
+  "properties": {
+    "v": {
+      "const": 1
+    },
+    "type": {
+      "enum": [
+        "hello",
+        "request",
+        "response",
+        "bye"
+      ]
+    },
+    "tx": {
+      "type": "string"
+    },
+    "nonce": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{32}$"
+    },
+    "managed_roots": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "source_roots": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "id": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "op": {
+      "enum": [
+        "create_directory",
+        "write_file",
+        "append_file",
+        "copy_file",
+        "rename",
+        "remove_file",
+        "remove_tree",
+        "set_pointer",
+        "remove_pointer",
+        "prepare_integration",
+        "discard_integration",
+        "activate_integration",
+        "remove_integration",
+        "free_space"
+      ]
+    },
+    "args": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "string"
+        },
+        "source": {
+          "type": "string"
+        },
+        "target": {
+          "type": "string"
+        },
+        "executable": {
+          "type": "boolean"
+        },
+        "contents": {
+          "type": "string",
+          "contentEncoding": "base64"
+        },
+        "integration": {
+          "type": "object",
+          "properties": {
+            "integration": {
+              "type": "object",
+              "properties": {
+                "kind": {
+                  "enum": [
+                    "shortcut",
+                    "file_association",
+                    "service",
+                    "registration"
+                  ]
+                },
+                "id": {
+                  "type": "string"
+                },
+                "label": {
+                  "type": "string"
+                },
+                "target": {
+                  "type": "string"
+                },
+                "start": {
+                  "enum": [
+                    "auto",
+                    "manual",
+                    null
+                  ]
+                },
+                "privileged": {
+                  "type": "boolean"
+                }
+              },
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "id",
+                "label",
+                "target"
+              ]
+            },
+            "product_id": {
+              "type": "string"
+            },
+            "product_name": {
+              "type": "string"
+            },
+            "scope": {
+              "enum": [
+                "user",
+                "machine"
+              ]
+            },
+            "root": {
+              "type": "string"
+            },
+            "tx": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "integration",
+            "product_id",
+            "product_name",
+            "scope",
+            "root",
+            "tx"
+          ]
+        },
+        "installed": {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string"
+            },
+            "id": {
+              "type": "string"
+            },
+            "location": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "id",
+            "location"
+          ]
+        }
+      },
+      "additionalProperties": false,
+      "required": []
+    },
+    "ok": {
+      "type": "boolean"
+    },
+    "error": {
+      "type": "string"
+    },
+    "location": {
+      "type": "string"
+    },
+    "free_bytes": {
+      "type": "integer",
+      "minimum": 0
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "v",
+    "type"
+  ]
+}

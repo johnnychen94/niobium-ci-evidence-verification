@@ -1,0 +1,14 @@
+window w=fill h=fill "Hello Setup"
+  stack column gap=lg pad=xl align=start w=fill h=fill
+    stack row gap=md pad=none align=center w=fill h=content
+      stack column gap=xs pad=none align=start w=fill h=content
+        text title normal w=fill h=content "Welcome to Hello"
+        text caption muted w=content h=content "Example Software Ltd."
+    text body normal w=fill h=content "Setup will install Hello on this computer. Every download is verified before anything is changed."
+    link #license action=show_license w=content h=content "View license agreement"
+    spacer w=content h=fill
+    stack row gap=sm pad=none align=center w=fill h=content
+      text caption muted w=content h=content "Version 1.0.0"
+      spacer w=fill h=content
+      button #cancel secondary action=cancel w=content h=content "Cancel"
+      button #next primary action=next w=content h=content "Next"

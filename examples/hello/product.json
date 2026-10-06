@@ -1,0 +1,33 @@
+{
+  "schema": 1,
+  "min_installer": "0.1.0",
+  "product": {
+    "id": "com.example.hello",
+    "name": "Hello",
+    "publisher": "Example Inc.",
+    "version": "1.0.0",
+    "release_sequence": 1
+  },
+  "install": { "default_scope": "user", "allowed_scopes": ["user", "machine"] },
+  "components": [
+    {
+      "id": "runtime",
+      "title": "Hello Runtime",
+      "required": true,
+      "default": true,
+      "artifacts": {}
+    },
+    {
+      "id": "docs",
+      "title": "Documentation",
+      "required": false,
+      "default": true,
+      "artifacts": {}
+    }
+  ],
+  "bootstrap": { "entrypoint": "runtime.main", "protocol": 1 },
+  "experience": {
+    "accent": "#3B5BDB",
+    "welcome_text": "Hello is a sample product for the Niobium installer."
+  }
+}

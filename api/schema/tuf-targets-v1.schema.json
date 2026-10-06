@@ -1,0 +1,202 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://niobium.dev/schema/tuf-targets-v1.schema.json",
+  "title": "tuf-targets-v1",
+  "type": "object",
+  "properties": {
+    "signed": {
+      "type": "object",
+      "properties": {
+        "_type": {
+          "const": "targets"
+        },
+        "spec_version": {
+          "const": "1.0"
+        },
+        "version": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "expires": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$"
+        },
+        "targets": {
+          "type": "object",
+          "patternProperties": {
+            "^[A-Za-z0-9._/-]{1,256}$": {
+              "type": "object",
+              "properties": {
+                "length": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "hashes": {
+                  "type": "object",
+                  "properties": {
+                    "sha256": {
+                      "type": "string",
+                      "pattern": "^[0-9a-f]{64}$"
+                    }
+                  },
+                  "additionalProperties": false,
+                  "required": [
+                    "sha256"
+                  ]
+                },
+                "custom": {
+                  "type": "object",
+                  "properties": {
+                    "release_sequence": {
+                      "type": "integer",
+                      "minimum": 1
+                    },
+                    "app_version": {
+                      "type": "string"
+                    }
+                  },
+                  "additionalProperties": false,
+                  "required": [
+                    "release_sequence",
+                    "app_version"
+                  ]
+                }
+              },
+              "additionalProperties": false,
+              "required": [
+                "length",
+                "hashes"
+              ]
+            }
+          },
+          "additionalProperties": false
+        },
+        "delegations": {
+          "type": "object",
+          "properties": {
+            "keys": {
+              "type": "object",
+              "patternProperties": {
+                "^[0-9a-f]{64}$": {
+                  "type": "object",
+                  "properties": {
+                    "keytype": {
+                      "const": "ed25519"
+                    },
+                    "scheme": {
+                      "const": "ed25519"
+                    },
+                    "keyval": {
+                      "type": "object",
+                      "properties": {
+                        "public": {
+                          "type": "string",
+                          "pattern": "^[0-9a-f]{64}$"
+                        }
+                      },
+                      "additionalProperties": false,
+                      "required": [
+                        "public"
+                      ]
+                    }
+                  },
+                  "additionalProperties": false,
+                  "required": [
+                    "keytype",
+                    "scheme",
+                    "keyval"
+                  ]
+                }
+              },
+              "additionalProperties": false
+            },
+            "roles": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "enum": [
+                      "stable",
+                      "beta",
+                      "nightly"
+                    ]
+                  },
+                  "keyids": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "pattern": "^[0-9a-f]{64}$"
+                    },
+                    "minItems": 1
+                  },
+                  "threshold": {
+                    "type": "integer",
+                    "minimum": 1
+                  },
+                  "paths": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "terminating": {
+                    "const": true
+                  }
+                },
+                "additionalProperties": false,
+                "required": [
+                  "name",
+                  "keyids",
+                  "threshold",
+                  "paths",
+                  "terminating"
+                ]
+              }
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "keys",
+            "roles"
+          ]
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "_type",
+        "spec_version",
+        "version",
+        "expires",
+        "targets"
+      ]
+    },
+    "signatures": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "keyid": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "sig": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{128}$"
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "keyid",
+          "sig"
+        ]
+      },
+      "minItems": 1
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "signed",
+    "signatures"
+  ]
+}

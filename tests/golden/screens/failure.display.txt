@@ -1,0 +1,9 @@
+fill 0,0 640x460 r0 #FFFFFFFF
+text 24,24 lh26 title/20 #B42318FF "Installation failed"
+text 24,66 lh18 body/13 #1C1C1EFF "A downloaded file did not match the signed release. Nothing was changed."
+text 24,100 lh14 caption/11 #5B5B63FF "Error code: TrustHashMismatch"
+fill 438,408 80x28 r6 #FFFFFFFF
+stroke 438,408 80x28 r6 w1 #C7C7CFFF
+text 460,413 lh18 body/13 #1C1C1EFF "Close"
+fill 526,408 90x28 r6 #0B63CEFF
+text 542,413 lh18 body/13 #FFFFFFFF "Try again"

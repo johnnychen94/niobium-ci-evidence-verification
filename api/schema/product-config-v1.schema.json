@@ -1,0 +1,83 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://niobium.dev/schema/product-config-v1.schema.json",
+  "title": "product-config-v1",
+  "type": "object",
+  "properties": {
+    "schema": {
+      "const": 1
+    },
+    "mode": {
+      "enum": [
+        "generic",
+        "branded"
+      ]
+    },
+    "product_id": {
+      "type": "string"
+    },
+    "channel": {
+      "enum": [
+        "stable",
+        "beta",
+        "nightly"
+      ]
+    },
+    "repository": {
+      "type": "string"
+    },
+    "trust_root": {
+      "type": "string"
+    },
+    "default_scope": {
+      "enum": [
+        "user",
+        "machine"
+      ]
+    },
+    "branding": {
+      "type": "object",
+      "properties": {
+        "product_name": {
+          "type": "string",
+          "maxLength": 128
+        },
+        "publisher": {
+          "type": "string",
+          "maxLength": 128
+        },
+        "accent": {
+          "type": "string",
+          "pattern": "^#[0-9A-Fa-f]{6}$"
+        },
+        "welcome_title": {
+          "type": "string",
+          "maxLength": 256
+        },
+        "welcome_body": {
+          "type": "string",
+          "maxLength": 4096
+        },
+        "complete_body": {
+          "type": "string",
+          "maxLength": 4096
+        },
+        "license": {
+          "type": "string",
+          "maxLength": 65536
+        },
+        "logo_png": {
+          "type": "string",
+          "contentEncoding": "base64",
+          "contentMediaType": "image/png"
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "mode"
+  ]
+}

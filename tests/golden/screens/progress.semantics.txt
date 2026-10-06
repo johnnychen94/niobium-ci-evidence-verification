@@ -1,0 +1,6 @@
+window "Hello Setup" 0,0 640x460
+  text "Installing Hello" 24,24 592x26
+  text "Downloading" 24,66 592x18
+  progressbar "Downloading" value="37%" 24,92 592x6
+  text "hello-1.0.0.tar.zst" 24,106 592x14
+  button #cancel "Cancel" 536,408 80x28 focusable +press

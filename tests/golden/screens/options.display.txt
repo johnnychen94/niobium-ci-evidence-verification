@@ -1,0 +1,24 @@
+fill 0,0 640x460 r0 #FFFFFFFF
+text 24,24 lh26 title/20 #1C1C1EFF "Installation options"
+fill 24,67 16x16 r8 #0B63CEFF
+fill 29,72 6x6 r3 #FFFFFFFF
+text 48,66 lh18 body/13 #1C1C1EFF "Just me"
+fill 24,89 16x16 r8 #FFFFFFFF
+stroke 24,89 16x16 r8 w1 #C7C7CFFF
+text 48,88 lh18 body/13 #1C1C1EFF "Everyone on this computer"
+text 24,122 lh18 body/13 #1C1C1EFF "Install location"
+fill 24,144 592x28 r6 #FFFFFFFF
+stroke 24,144 592x28 r6 w1 #C7C7CFFF
+icon 32,150 16x16 folder #0B63CEFF
+clip 56,144 552x28
+  text 56,149 lh18 body/13 #1C1C1EFF "/Users/me/Applications/Hello"
+unclip
+text 24,188 lh14 caption/11 #5B5B63FF "By continuing you accept the license agreement of Hello."
+fill 360,408 80x28 r6 #FFFFFFFF
+stroke 360,408 80x28 r6 w1 #C7C7CFFF
+text 384,413 lh18 body/13 #1C1C1EFF "Back"
+fill 448,408 80x28 r6 #FFFFFFFF
+stroke 448,408 80x28 r6 w1 #C7C7CFFF
+text 466,413 lh18 body/13 #1C1C1EFF "Cancel"
+fill 536,408 80x28 r6 #0B63CEFF
+text 558,413 lh18 body/13 #FFFFFFFF "Install"

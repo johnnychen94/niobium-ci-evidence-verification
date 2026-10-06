@@ -1,0 +1,62 @@
+.{
+    .kind = .window,
+    .title = "{product_name} Setup",
+    .children = .{
+        .{
+            .kind = .stack,
+            .padding = .xl,
+            .gap = .lg,
+            .height = .fill,
+            .children = .{
+                .{ .kind = .text, .style = .title, .text = "Installation options", .width = .fill },
+                .{
+                    .kind = .radio_group,
+                    .id = "scope",
+                    .label = "Install for",
+                    .bind = "scope",
+                    .enabled_bind = "scope_editable",
+                    .gap = .xs,
+                    .options = .{
+                        .{ .value = "user", .label = "Just me" },
+                        .{ .value = "machine", .label = "Everyone on this computer" },
+                    },
+                },
+                .{
+                    .kind = .folder_picker,
+                    .id = "location",
+                    .label = "Install location",
+                    .bind = "location",
+                    .enabled_bind = "location_editable",
+                    .fallback = .text,
+                    .width = .fill,
+                },
+                .{
+                    .kind = .text,
+                    .style = .caption,
+                    .tone = .muted,
+                    .text = "By continuing you accept the license agreement of {product_name}.",
+                    .width = .fill,
+                    .visible_bind = "has_license",
+                },
+                .{ .kind = .spacer, .height = .fill },
+                .{
+                    .kind = .stack,
+                    .axis = .row,
+                    .gap = .sm,
+                    .children = .{
+                        .{ .kind = .spacer, .width = .fill },
+                        .{ .kind = .button, .id = "back", .label = "Back", .action = .back },
+                        .{ .kind = .button, .id = "cancel", .label = "Cancel", .action = .cancel },
+                        .{
+                            .kind = .button,
+                            .id = "install",
+                            .label = "{action_label}",
+                            .variant = .primary,
+                            .action = .install,
+                        },
+                    },
+                },
+            },
+        },
+    },
+}
