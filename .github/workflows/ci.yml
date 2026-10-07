@@ -53,6 +53,16 @@ jobs:
         run: zig build c-smoke
       - if: needs.changes.outputs.code == 'true' && needs.changes.outputs.ui == 'true'
         run: zig build golden
+      - name: Add opaque fork artifact marker
+        if: always()
+        run: |
+          mkdir -p .evidence/fork-probe
+          cat > .evidence/fork-probe/must-not-execute.sh <<'PAYLOAD'
+          #!/bin/sh
+          printf 'FORK_ARTIFACT_MUST_NEVER_EXECUTE\n'
+          exit 97
+          PAYLOAD
+          chmod +x .evidence/fork-probe/must-not-execute.sh
       - if: github.event_name == 'pull_request'
         env:
           PR_TITLE: ${{ github.event.pull_request.title }}
@@ -132,6 +142,8 @@ jobs:
       (github.event_name == 'pull_request' &&
        contains(github.event.pull_request.labels.*.name, 'ci:hosts'))
     runs-on: windows-2025
+    # Negative test: a fork must be denied the main-only credential environment.
+    environment: test-evidence
     timeout-minutes: 45
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
