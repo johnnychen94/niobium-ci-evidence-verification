@@ -303,8 +303,9 @@ pub fn activate(
 /// `<data>/applications/<product>.assoc-<ext>.desktop` →
 /// `<data>/mime/packages/<product>-<ext>.xml`.
 fn mimeSibling(arena: Allocator, location: []const u8) Error![]const u8 {
-    const apps = std.fs.path.dirname(location) orelse return error.PlatformIntegrationFailed;
-    const data = std.fs.path.dirname(apps) orelse return error.PlatformIntegrationFailed;
+    const apps = std.fs.path.dirnamePosix(location) orelse return error.PlatformIntegrationFailed;
+    const data = std.fs.path.dirnamePosix(apps) orelse return error.PlatformIntegrationFailed;
+    if (!std.fs.path.isAbsolutePosix(data)) return error.PlatformIntegrationFailed;
     const stem = std.fs.path.stem(location);
     const at = std.mem.findLast(u8, stem, ".assoc-") orelse return error.PlatformIntegrationFailed;
     const xml = try std.fmt.allocPrint(
@@ -312,7 +313,10 @@ fn mimeSibling(arena: Allocator, location: []const u8) Error![]const u8 {
         "{s}-{s}.xml",
         .{ stem[0..at], stem[at + ".assoc-".len ..] },
     );
-    return host.joinAbsolute(arena, data, &.{ "mime", "packages", xml });
+    return std.fs.path.resolveAllocPosix(
+        arena,
+        &.{ data, "mime", "packages", try names.segment(xml) },
+    );
 }
 
 pub fn remove(

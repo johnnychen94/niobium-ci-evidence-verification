@@ -1,0 +1,160 @@
+{
+  "Rules": [
+    {
+      "ID": "ci-evidence-2026-10-ordinary-90-days",
+      "Status": "Enabled",
+      "Filter": {
+        "Prefix": "ci-evidence/2026-10/evidence/v1/"
+      },
+      "Expiration": {
+        "Days": 90
+      },
+      "AbortIncompleteMultipartUpload": {
+        "DaysAfterInitiation": 1
+      }
+    },
+    {
+      "ID": "ci-evidence-2026-11-ordinary-90-days",
+      "Status": "Enabled",
+      "Filter": {
+        "Prefix": "ci-evidence/2026-11/evidence/v1/"
+      },
+      "Expiration": {
+        "Days": 90
+      },
+      "AbortIncompleteMultipartUpload": {
+        "DaysAfterInitiation": 1
+      }
+    },
+    {
+      "ID": "ci-evidence-2026-12-ordinary-90-days",
+      "Status": "Enabled",
+      "Filter": {
+        "Prefix": "ci-evidence/2026-12/evidence/v1/"
+      },
+      "Expiration": {
+        "Days": 90
+      },
+      "AbortIncompleteMultipartUpload": {
+        "DaysAfterInitiation": 1
+      }
+    },
+    {
+      "ID": "ci-evidence-2027-01-ordinary-90-days",
+      "Status": "Enabled",
+      "Filter": {
+        "Prefix": "ci-evidence/2027-01/evidence/v1/"
+      },
+      "Expiration": {
+        "Days": 90
+      },
+      "AbortIncompleteMultipartUpload": {
+        "DaysAfterInitiation": 1
+      }
+    },
+    {
+      "ID": "ci-evidence-2027-02-ordinary-90-days",
+      "Status": "Enabled",
+      "Filter": {
+        "Prefix": "ci-evidence/2027-02/evidence/v1/"
+      },
+      "Expiration": {
+        "Days": 90
+      },
+      "AbortIncompleteMultipartUpload": {
+        "DaysAfterInitiation": 1
+      }
+    },
+    {
+      "ID": "ci-evidence-2027-03-ordinary-90-days",
+      "Status": "Enabled",
+      "Filter": {
+        "Prefix": "ci-evidence/2027-03/evidence/v1/"
+      },
+      "Expiration": {
+        "Days": 90
+      },
+      "AbortIncompleteMultipartUpload": {
+        "DaysAfterInitiation": 1
+      }
+    },
+    {
+      "ID": "ci-evidence-2027-04-ordinary-90-days",
+      "Status": "Enabled",
+      "Filter": {
+        "Prefix": "ci-evidence/2027-04/evidence/v1/"
+      },
+      "Expiration": {
+        "Days": 90
+      },
+      "AbortIncompleteMultipartUpload": {
+        "DaysAfterInitiation": 1
+      }
+    },
+    {
+      "ID": "ci-evidence-2027-05-ordinary-90-days",
+      "Status": "Enabled",
+      "Filter": {
+        "Prefix": "ci-evidence/2027-05/evidence/v1/"
+      },
+      "Expiration": {
+        "Days": 90
+      },
+      "AbortIncompleteMultipartUpload": {
+        "DaysAfterInitiation": 1
+      }
+    },
+    {
+      "ID": "ci-evidence-2027-06-ordinary-90-days",
+      "Status": "Enabled",
+      "Filter": {
+        "Prefix": "ci-evidence/2027-06/evidence/v1/"
+      },
+      "Expiration": {
+        "Days": 90
+      },
+      "AbortIncompleteMultipartUpload": {
+        "DaysAfterInitiation": 1
+      }
+    },
+    {
+      "ID": "ci-evidence-2027-07-ordinary-90-days",
+      "Status": "Enabled",
+      "Filter": {
+        "Prefix": "ci-evidence/2027-07/evidence/v1/"
+      },
+      "Expiration": {
+        "Days": 90
+      },
+      "AbortIncompleteMultipartUpload": {
+        "DaysAfterInitiation": 1
+      }
+    },
+    {
+      "ID": "ci-evidence-2027-08-ordinary-90-days",
+      "Status": "Enabled",
+      "Filter": {
+        "Prefix": "ci-evidence/2027-08/evidence/v1/"
+      },
+      "Expiration": {
+        "Days": 90
+      },
+      "AbortIncompleteMultipartUpload": {
+        "DaysAfterInitiation": 1
+      }
+    },
+    {
+      "ID": "ci-evidence-2027-09-ordinary-90-days",
+      "Status": "Enabled",
+      "Filter": {
+        "Prefix": "ci-evidence/2027-09/evidence/v1/"
+      },
+      "Expiration": {
+        "Days": 90
+      },
+      "AbortIncompleteMultipartUpload": {
+        "DaysAfterInitiation": 1
+      }
+    }
+  ]
+}

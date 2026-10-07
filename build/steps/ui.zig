@@ -1,6 +1,7 @@
 //! `zig build golden|gallery` and the tokens.json -> Zig codegen step.
 
 const std = @import("std");
+const evidence = @import("evidence.zig");
 const graph_mod = @import("../graph.zig");
 
 /// tokens.json -> tokens.zig (contrast gate runs inside gen-tokens).
@@ -20,8 +21,9 @@ pub fn addGolden(
     b: *std.Build,
     graph: *const graph_mod.Graph,
     update: ?[]const u8,
+    config: evidence.Config,
 ) *std.Build.Step {
-    const run = b.addRunArtifact(addGoldenSuite(b, graph, update));
+    const run = evidence.addRun(b, config, .golden, addGoldenSuite(b, graph, update), null);
     run.setCwd(b.path("."));
     // The golden files are read at run time, not tracked as build inputs.
     run.has_side_effects = true;

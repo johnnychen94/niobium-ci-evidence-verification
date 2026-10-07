@@ -1,0 +1,80 @@
+name: Evidence
+
+on:
+  workflow_run:
+    workflows: [CI, Hosts, Nightly]
+    types: [completed]
+  workflow_dispatch:
+    inputs:
+      run_id:
+        description: Source test workflow run to republish
+        required: true
+      attempt:
+        description: Source run attempt
+        required: true
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  publish:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    environment: test-evidence
+    env:
+      ARCHIVE_RUN_ID: ${{ github.event.workflow_run.id || inputs.run_id }}
+      ARCHIVE_RUN_ATTEMPT: ${{ github.event.workflow_run.run_attempt || inputs.attempt }}
+    steps:
+      # workflow_run uses trusted default-branch code. Never check out the triggering SHA.
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: mlugg/setup-zig@d1434d08867e3ee9daa34448df10607b98908d29 # v2.2.1
+        with:
+          version: 0.17.0
+          use-cache: false
+      - name: Install pinned transport
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP"
+          curl --fail --silent --show-error --location --max-time 180 \
+            https://awscli.amazonaws.com/awscli-exe-linux-x86_64-2.27.49.zip -o awscli.zip
+          echo '93842f724f8b76fbee05ac6a403dad603043b04eecfe3526f2035494718eb87b  awscli.zip' | sha256sum -c -
+          unzip -q awscli.zip
+          ./aws/install --install-dir "$RUNNER_TEMP/aws-cli" --bin-dir "$RUNNER_TEMP/aws-bin"
+          echo "$RUNNER_TEMP/aws-bin" >> "$GITHUB_PATH"
+      - name: Download source provenance and opaque ZIP data
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          case "$ARCHIVE_RUN_ID:$ARCHIVE_RUN_ATTEMPT" in
+            *[!0-9:]*|:*|*:) exit 1 ;;
+          esac
+          mkdir -p "$RUNNER_TEMP/source-evidence"
+          cd "$RUNNER_TEMP/source-evidence"
+          base="repos/$GITHUB_REPOSITORY/actions/runs/$ARCHIVE_RUN_ID"
+          gh api "$base/attempts/$ARCHIVE_RUN_ATTEMPT" | head -c 1048577 > run.json
+          test "$(wc -c < run.json)" -le 1048576
+          jq -e '.status == "completed" and (.path == ".github/workflows/ci.yml" or .path == ".github/workflows/hosts.yml" or .path == ".github/workflows/nightly.yml")' run.json
+          gh api --paginate "$base/attempts/$ARCHIVE_RUN_ATTEMPT/jobs?per_page=100" | head -c 1048577 | jq -s . > jobs.json
+          gh api --paginate "$base/artifacts?per_page=100" | head -c 1048577 | jq -s . > artifacts.json
+          test "$(wc -c < jobs.json)" -le 1048576
+          test "$(wc -c < artifacts.json)" -le 1048576
+          jq -r --arg prefix "evidence-$ARCHIVE_RUN_ATTEMPT-" \
+            '[.[].artifacts[] | select(.name | startswith($prefix))] | if length > 100 then error("too many artifacts") elif (map(.size_in_bytes) | add // 0) > 268435456 then error("workflow artifacts too large") else .[] end | if .size_in_bytes > 134217728 then error("artifact too large") else .id end' \
+            artifacts.json > ids.txt
+          while IFS= read -r id; do
+            case "$id" in ''|*[!0-9]*) exit 1 ;; esac
+            gh api "repos/$GITHUB_REPOSITORY/actions/artifacts/$id/zip" | head -c 134217729 > "$id.zip"
+            test "$(wc -c < "$id.zip")" -le 134217728
+          done < ids.txt
+      - name: Validate and publish saved evidence
+        env:
+          R2_ENDPOINT: ${{ vars.R2_ENDPOINT }}
+          R2_BUCKET: ${{ vars.R2_BUCKET }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+        run: zig build evidence -Daction=publish -Dinput="$RUNNER_TEMP/source-evidence" --cache-poison=disallowed

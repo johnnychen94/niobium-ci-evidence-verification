@@ -131,9 +131,9 @@ pub fn stagingDir(
     return join(arena, os, &.{ base, "staging", name });
 }
 
-/// Maintainer executable relative to the install root.
+/// Portable integration target relative to the install root, before native rendering.
 pub fn maintainerPath(os: Os) []const u8 {
-    return if (os == .windows) "maintainer\\setup.exe" else "maintainer/setup";
+    return if (os == .windows) "maintainer/setup.exe" else "maintainer/setup";
 }
 
 test "path policy: scope × platform" {

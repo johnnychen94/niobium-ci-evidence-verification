@@ -1,0 +1,353 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://niobium-project.dev/schema/test-report-v1.schema.json",
+  "title": "Niobium test report v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "suite",
+    "execution",
+    "lane",
+    "driver",
+    "os",
+    "cpu",
+    "environment",
+    "revision",
+    "dirty",
+    "repository",
+    "run",
+    "attempt",
+    "job",
+    "toolchain",
+    "target",
+    "parameters",
+    "started_ms",
+    "finished_ms",
+    "complete",
+    "verdict",
+    "reason",
+    "cases",
+    "attachments",
+    "provenance"
+  ],
+  "properties": {
+    "schema": {
+      "const": 1
+    },
+    "suite": {
+      "enum": [
+        "unit",
+        "conformance",
+        "e2e",
+        "sim",
+        "golden",
+        "fuzz",
+        "c-smoke"
+      ]
+    },
+    "execution": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^[A-Za-z0-9_.-]+$"
+    },
+    "lane": {
+      "enum": [
+        "L1/L2",
+        "L2",
+        "L3",
+        "L4"
+      ]
+    },
+    "driver": {
+      "type": "string",
+      "maxLength": 4096
+    },
+    "os": {
+      "type": "string",
+      "maxLength": 4096
+    },
+    "cpu": {
+      "type": "string",
+      "maxLength": 4096
+    },
+    "environment": {
+      "type": "string",
+      "maxLength": 4096
+    },
+    "revision": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{40}$"
+    },
+    "dirty": {
+      "type": "boolean"
+    },
+    "repository": {
+      "type": "string",
+      "maxLength": 4096
+    },
+    "run": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^[A-Za-z0-9_.-]+$"
+    },
+    "attempt": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^[A-Za-z0-9_.-]+$"
+    },
+    "job": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^[A-Za-z0-9_.-]+$"
+    },
+    "toolchain": {
+      "type": "string",
+      "maxLength": 4096
+    },
+    "target": {
+      "type": "string",
+      "maxLength": 4096
+    },
+    "parameters": {
+      "type": "array",
+      "maxItems": 5,
+      "minItems": 5,
+      "prefixItems": [
+        {
+          "type": "string",
+          "maxLength": 128
+        },
+        {
+          "type": "string",
+          "pattern": "^seeds=[0-9]+$"
+        },
+        {
+          "type": "string",
+          "pattern": "^seed-start=[0-9]+$"
+        },
+        {
+          "enum": [
+            "tsan=true",
+            "tsan=false"
+          ]
+        },
+        {
+          "enum": [
+            "coverage=true",
+            "coverage=false"
+          ]
+        }
+      ]
+    },
+    "started_ms": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 253402300799999
+    },
+    "finished_ms": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 253402300799999
+    },
+    "complete": {
+      "type": "boolean"
+    },
+    "verdict": {
+      "enum": [
+        "PASS",
+        "FAIL",
+        "BLOCKED",
+        "NOT_RUN",
+        "DEFERRED"
+      ]
+    },
+    "reason": {
+      "type": "string",
+      "maxLength": 4096
+    },
+    "cases": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "contract",
+          "acceptance",
+          "scope",
+          "verdict",
+          "reason",
+          "started_ms",
+          "finished_ms"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "pattern": "^[A-Za-z0-9_.-]+$"
+          },
+          "contract": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "pattern": "^[A-Za-z0-9_.-]+$"
+          },
+          "acceptance": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9_.-]+$"
+            },
+            "maxItems": 32
+          },
+          "scope": {
+            "type": "string",
+            "maxLength": 4096
+          },
+          "verdict": {
+            "enum": [
+              "PASS",
+              "FAIL",
+              "BLOCKED",
+              "NOT_RUN",
+              "DEFERRED"
+            ]
+          },
+          "reason": {
+            "type": "string",
+            "maxLength": 4096
+          },
+          "started_ms": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "finished_ms": {
+            "type": "integer",
+            "minimum": 0
+          }
+        }
+      },
+      "maxItems": 256
+    },
+    "attachments": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "file",
+          "key",
+          "size",
+          "sha256",
+          "retention"
+        ],
+        "properties": {
+          "file": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "pattern": "^[A-Za-z0-9_.-]+$"
+          },
+          "key": {
+            "type": "string",
+            "maxLength": 4096
+          },
+          "size": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 67108864
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "retention": {
+            "enum": [
+              "ordinary",
+              "release"
+            ]
+          }
+        }
+      },
+      "maxItems": 1024
+    },
+    "provenance": {
+      "anyOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "event",
+            "workflow",
+            "head_sha",
+            "head_repository",
+            "head_branch",
+            "conclusion",
+            "fork",
+            "artifact_id",
+            "job_id",
+            "job_conclusion",
+            "run_started_ms"
+          ],
+          "properties": {
+            "event": {
+              "type": "string",
+              "maxLength": 4096
+            },
+            "workflow": {
+              "type": "string",
+              "maxLength": 4096
+            },
+            "head_sha": {
+              "type": "string",
+              "maxLength": 4096
+            },
+            "head_repository": {
+              "type": "string",
+              "maxLength": 4096
+            },
+            "head_branch": {
+              "type": "string",
+              "maxLength": 4096
+            },
+            "conclusion": {
+              "type": "string",
+              "maxLength": 4096
+            },
+            "fork": {
+              "type": "boolean"
+            },
+            "artifact_id": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "job_id": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "job_conclusion": {
+              "type": "string",
+              "maxLength": 4096
+            },
+            "run_started_ms": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 253402300799999
+            }
+          }
+        }
+      ]
+    }
+  }
+}

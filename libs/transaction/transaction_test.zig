@@ -34,13 +34,17 @@ test "N1-AC-06 install, update and uninstall commit cleanly" {
     const w: testing.World = try .init(std.testing.io, a, try baseDir(&tmp, a, "w"));
     try prepareOld(w, .update);
     const installed = try w.snapshot();
-    try expectContains(installed, "root/current -> versions" ++ std.fs.path.sep_str ++ "1");
+    try expectContains(installed, "root/current -> versions/1");
     try expectContains(installed, "root/versions/1/runtime/bin/hello = hello 1.0.0");
-    try expectContains(installed, "root/maintainer/setup = setup");
+    const maintainer = if (@import("builtin").os.tag == .windows)
+        "root/maintainer/setup.exe = setup"
+    else
+        "root/maintainer/setup = setup";
+    try expectContains(installed, maintainer);
     try expectContains(installed, "system/shortcut/Hello = com.example.hello");
     try runClean(w, try planFor(w, .update));
     const updated = try w.snapshot();
-    try expectContains(updated, "root/current -> versions" ++ std.fs.path.sep_str ++ "2");
+    try expectContains(updated, "root/current -> versions/2");
     try expectContains(updated, "root/versions/2/runtime/bin/hello = hello 2.0.0");
     try std.testing.expect(std.mem.find(u8, updated, "versions/1") == null);
     try std.testing.expect(std.mem.find(u8, updated, "root/journal/") == null);

@@ -5,6 +5,7 @@ const std = @import("std");
 const graph_mod = @import("build/graph.zig");
 const artifacts = @import("build/steps/artifacts.zig");
 const checks = @import("build/steps/checks.zig");
+const evidence = @import("build/steps/evidence.zig");
 const tests = @import("build/steps/tests.zig");
 const cross = @import("build/steps/cross.zig");
 const targets = @import("build/targets.zig");
@@ -68,6 +69,17 @@ pub fn build(b: *std.Build) void {
     const options: artifacts.Options = .{ .product_config = product_config, .version = version };
 
     const tools = checks.addTools(b, b.graph.host);
+    const selected = evidence.options(
+        b,
+        .{
+            .exe = tools.evidence,
+            .seeds = seeds.count,
+            .seed_start = seeds.start,
+            .tsan = tsan,
+            .coverage = coverage,
+        },
+    ) catch return;
+    const config = selected.config;
     const inputs: graph_mod.Inputs = .{
         .tokens = ui.addTokens(b, tools.gen_tokens),
         .deps = deps.add(b, tools.fetch_deps),
@@ -91,36 +103,69 @@ pub fn build(b: *std.Build) void {
     }
     b.installFile("api/c/distribution.h", "include/distribution.h");
 
-    const steps = addQualitySteps(b, &graph, tools, tsan, seeds, coverage);
-    const cross_steps = cross.add(b, inputs, tools.check_binary, options);
+    const steps = addQualitySteps(b, &graph, tools, tsan, seeds, coverage, config);
+    addTestGates(b, &graph, tools, options, config, selected, steps, .{
+        .setup = setup,
+        .nbpack = nbpack_exe,
+        .hello = e2e.addHello(b, &graph),
+        .static_lib = static_lib,
+    }, workbench, update);
+}
+
+fn addTestGates(
+    b: *std.Build,
+    graph: *const graph_mod.Graph,
+    tools: checks.Tools,
+    options: artifacts.Options,
+    config: evidence.Config,
+    selected: evidence.Selection,
+    steps: QualitySteps,
+    binaries: e2e.Inputs,
+    workbench: *std.Build.Step.Compile,
+    update: ?[]const u8,
+) void {
+    const cross_steps = cross.add(b, graph.config.inputs, tools.check_binary, options);
     const cross_tests = b.step("test-cross", "Compile unit + conformance tests for every target");
-    tests.addCrossTests(b, inputs, &app_tests, cross_tests);
+    tests.addCrossTests(b, graph.config.inputs, &app_tests, cross_tests);
     const golden_step = b.step("golden", "UI IR / DisplayList / semantic / pixel goldens");
-    golden_step.dependOn(ui.addGolden(b, &graph, update));
+    golden_step.dependOn(ui.addGolden(b, graph, update, config));
     b.step(
         "gallery",
         "Render the UI catalog to .evidence/ui-gallery",
     ).dependOn(ui.addGallery(b, workbench));
 
-    const e2e_inputs: e2e.Inputs = .{
-        .setup = setup,
-        .nbpack = nbpack_exe,
-        .hello = e2e.addHello(b, &graph),
-        .static_lib = static_lib,
-    };
     const e2e_step = b.step("e2e", "install/update/rollback/repair/uninstall, online + offline");
-    e2e_step.dependOn(e2e.addE2e(b, &graph, e2e_inputs));
+    e2e_step.dependOn(e2e.addE2e(b, graph, binaries, config));
     const c_smoke = b.step("c-smoke", "C program against distribution.h + static library");
-    c_smoke.dependOn(e2e.addCSmoke(b, &graph, static_lib));
-    const example_step = addExampleSteps(b, target, tools.vm_smoke);
+    c_smoke.dependOn(e2e.addCSmoke(b, graph, binaries.static_lib, config));
+    const example_step = addExampleSteps(b, graph.config.target, tools.vm_smoke);
 
-    addRunSteps(b, setup, workbench);
+    addRunSteps(b, binaries.setup, workbench);
 
+    evidence.select(
+        b,
+        selected,
+        &.{ steps.unit, steps.conformance, e2e_step, steps.sim, golden_step, steps.fuzz, c_smoke },
+        steps.tsan,
+    );
     const verify = b.step("verify", "Definition of Done gate (run with --cache-poison=disallowed)");
+    if (selected.narrowed) {
+        verify.dependOn(&b.addFail("verify rejects -Dsuite and -Dcase narrowing").step);
+        return;
+    }
     for ([_]*std.Build.Step{
-        steps.check,              steps.test_step,       steps.sim,         golden_step,
-        e2e_step,                 c_smoke,               cross_steps.cross, cross_tests,
-        cross_steps.check_binary, cross_steps.size_gate, example_step,
+        steps.check,
+        steps.unit,
+        steps.conformance,
+        steps.sim,
+        golden_step,
+        e2e_step,
+        c_smoke,
+        cross_steps.cross,
+        cross_tests,
+        cross_steps.check_binary,
+        cross_steps.size_gate,
+        example_step,
     }) |step| verify.dependOn(step);
     if (steps.tsan) |tsan_step| verify.dependOn(tsan_step);
 }
@@ -147,7 +192,9 @@ const SimSeeds = struct { count: u32, start: u64 };
 
 const QualitySteps = struct {
     check: *std.Build.Step,
-    test_step: *std.Build.Step,
+    unit: *std.Build.Step,
+    conformance: *std.Build.Step,
+    fuzz: *std.Build.Step,
     sim: *std.Build.Step,
     tsan: ?*std.Build.Step,
 };
@@ -159,6 +206,7 @@ fn addQualitySteps(
     tsan: bool,
     seeds: SimSeeds,
     coverage: bool,
+    config: evidence.Config,
 ) QualitySteps {
     const fmt = b.step("fmt", "zig fmt --check --ast-check");
     fmt.dependOn(checks.addFmtCheck(b));
@@ -183,12 +231,14 @@ fn addQualitySteps(
     check.dependOn(docs);
     check.dependOn(&checks.addRepoRun(b, tools.check, &.{}).step);
 
-    const test_step = b.step("test", "Unit tests per module + conformance (SafeAllocator)");
-    addAllTests(b, graph, test_step, coverage);
-    checks.addToolTests(b, tools, test_step);
+    const test_step = privateStep(b, "unit");
+    const conformance = privateStep(b, "host conformance");
+    addAllTests(b, graph, test_step, conformance, coverage, config);
+    checks.addToolTests(b, tools, test_step, config);
     const tsan_step: ?*std.Build.Step = if (tsan or hostSupportsTsan(b)) addTsan(
         b,
         graph,
+        config,
     ) else null;
     if (tsan) test_step.dependOn(tsan_step.?);
 
@@ -196,25 +246,44 @@ fn addQualitySteps(
     const sim_opts = b.addOptions();
     sim_opts.addOption(u32, "seeds", seeds.count);
     sim_opts.addOption(u64, "seed_start", seeds.start);
-    sim.dependOn(&tests.addSuite(b, graph, "sim", sim_opts).step);
+    sim.dependOn(&tests.addSuite(b, graph, "sim", sim_opts, config).step);
 
-    const fuzz = b.step("fuzz", "Fuzz targets (corpus replay; add --fuzz for continuous)");
-    fuzz.dependOn(&tests.addSuite(b, graph, "fuzz", b.addOptions()).step);
-    return .{ .check = check, .test_step = test_step, .sim = sim, .tsan = tsan_step };
+    const fuzz = b.step("fuzz", "Fuzz corpus replay (continuous: -Dcontinuous-fuzz --fuzz)");
+    const continuous = b.option(bool, "continuous-fuzz", "Use Zig's native fuzz protocol") orelse
+        false;
+    const fuzz_binary = tests.compileSuite(b, graph, "fuzz", b.addOptions());
+    const fuzz_run = if (continuous) b.addRunArtifact(fuzz_binary) else evidence.addRun(
+        b,
+        config,
+        .fuzz,
+        fuzz_binary,
+        null,
+    );
+    fuzz.dependOn(&fuzz_run.step);
+    return .{
+        .check = check,
+        .unit = test_step,
+        .conformance = conformance,
+        .fuzz = fuzz,
+        .sim = sim,
+        .tsan = tsan_step,
+    };
 }
 
 fn addAllTests(
     b: *std.Build,
     graph: *const graph_mod.Graph,
     test_step: *std.Build.Step,
+    conformance_step: *std.Build.Step,
     coverage: bool,
+    config: evidence.Config,
 ) void {
     const root: ?[]const u8 = if (coverage) "zig-out/coverage" else null;
-    tests.addUnitTests(b, graph, test_step, root);
+    tests.addUnitTests(b, graph, test_step, root, config);
     const conformance = tests.compileSuite(b, graph, "conformance", b.addOptions());
     const suite_dir = if (root) |base| b.fmt("{s}/suite-conformance", .{base}) else null;
-    tests.dependOnTest(b, test_step, conformance, suite_dir);
-    tests.addAppTests(b, graph, test_step, &app_tests, root);
+    tests.dependOnTest(b, conformance_step, conformance, suite_dir, config, .conformance);
+    tests.addAppTests(b, graph, test_step, &app_tests, root, config);
 }
 
 const app_tests = [_]tests.AppTest{
@@ -265,7 +334,7 @@ fn hostSupportsTsan(b: *std.Build) bool {
     };
 }
 
-fn addTsan(b: *std.Build, graph: *const graph_mod.Graph) *std.Build.Step {
+fn addTsan(b: *std.Build, graph: *const graph_mod.Graph, config: evidence.Config) *std.Build.Step {
     const tsan_graph = graph_mod.create(b, .{
         .target = graph.config.target,
         .optimize = .debug,
@@ -275,7 +344,9 @@ fn addTsan(b: *std.Build, graph: *const graph_mod.Graph) *std.Build.Step {
     const step = b.step("tsan", "ThreadSanitizer over engine, broker and UI-thread tests");
     const opts = b.addOptions();
     opts.addOption(u32, "seeds", 16);
-    step.dependOn(&tests.addSuite(b, &tsan_graph, "concurrency", opts).step);
+    var sanitizer = config;
+    sanitizer.tsan = true;
+    step.dependOn(&tests.addSuite(b, &tsan_graph, "concurrency", opts, sanitizer).step);
     return step;
 }
 
@@ -290,4 +361,13 @@ fn addRunSteps(
     const run_bench = b.addRunArtifact(workbench);
     run_bench.addPassthruArgs();
     b.step("workbench", "Run ui-workbench").dependOn(&run_bench.step);
+}
+
+fn privateStep(b: *std.Build, name: []const u8) *std.Build.Step {
+    const step = b.allocator.create(std.Build.Step.TopLevel) catch @panic("OOM");
+    step.* = .{
+        .step = .init(.{ .tag = .top_level, .name = name, .owner = b }),
+        .description = name,
+    };
+    return &step.step;
 }

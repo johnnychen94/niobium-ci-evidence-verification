@@ -31,6 +31,11 @@ pub fn main(init: std.process.Init) !u8 {
             return 1;
         };
         try out.print("{{\"protocol\":1,\"status\":\"ok\",\"message\":\"{s}\"}}\n", .{message});
+    } else if (args.len == 2 and std.mem.eql(u8, args[1], "--release-probe")) {
+        const bin = std.fs.path.dirname(args[0]) orelse return error.MissingExecutableDirectory;
+        const path = try std.fs.path.join(arena, &.{ bin, "release.txt" });
+        const release = try std.Io.Dir.cwd().readFileAlloc(io, path, arena, .limited(128));
+        try out.writeAll(release);
     } else {
         try out.writeAll("Hello from the Niobium sample product.\n");
     }

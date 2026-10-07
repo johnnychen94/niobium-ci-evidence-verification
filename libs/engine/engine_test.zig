@@ -223,7 +223,17 @@ test "N1-UJ-01 user-scope install calls the app bootstrap" {
     try std.testing.expectEqualStrings("hello 1.0.0", try w.read("current/runtime/bin/hello"));
     const state = try w.installed();
     try std.testing.expectEqual(@as(u64, 1), state.release_sequence);
-    try std.testing.expectEqual(@as(usize, 1), state.integrations.len);
+    const integrations: usize = if (builtin.os.tag == .windows) 2 else 1;
+    try std.testing.expectEqual(integrations, state.integrations.len);
+    try std.testing.expectEqual(
+        contracts.installation.IntegrationKind.shortcut,
+        state.integrations[0].kind,
+    );
+    if (builtin.os.tag == .windows)
+        try std.testing.expectEqual(
+            contracts.installation.IntegrationKind.registration,
+            state.integrations[1].kind,
+        );
     try std.testing.expect(
         w.exists(try std.fs.path.join(w.arena(), &.{ w.root, "trust", "state.json" })),
     );

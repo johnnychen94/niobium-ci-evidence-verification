@@ -165,10 +165,13 @@ pub const World = struct {
         while (try walker.next(w.io)) |entry| {
             if (std.mem.startsWith(u8, entry.path, "staging")) continue;
             const name = try w.arena.print("{s}/{s}", .{ label, entry.path });
+            if (@import("builtin").os.tag == .windows) std.mem.replaceScalar(u8, name, '\\', '/');
             switch (entry.kind) {
                 .sym_link => {
                     var buffer: [std.fs.max_path_bytes]u8 = undefined; // SAFETY: readLink fills.
                     const len = try dir.readLink(w.io, entry.path, &buffer);
+                    if (@import("builtin").os.tag == .windows)
+                        std.mem.replaceScalar(u8, buffer[0..len], '\\', '/');
                     try lines.append(
                         w.arena,
                         try w.arena.print("{s} -> {s}", .{ name, buffer[0..len] }),
@@ -181,10 +184,18 @@ pub const World = struct {
                         w.arena,
                         .limited(1 << 20),
                     );
-                    const normalized = try std.mem.replaceOwned(
+                    const escaped_base = try std.json.Stringify.valueAlloc(w.arena, w.base, .{});
+                    const escaped = try std.mem.replaceOwned(
                         u8,
                         w.arena,
                         bytes,
+                        escaped_base[1 .. escaped_base.len - 1],
+                        "<base>",
+                    );
+                    const normalized = try std.mem.replaceOwned(
+                        u8,
+                        w.arena,
+                        escaped,
                         w.base,
                         "<base>",
                     );

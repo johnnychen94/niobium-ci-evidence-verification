@@ -5,6 +5,7 @@ const specs = @import("../modules.zig");
 const graph_mod = @import("../graph.zig");
 const targets = @import("../targets.zig");
 const ui = @import("ui.zig");
+const evidence = @import("evidence.zig");
 
 pub const suite_imports = [_][]const u8{
     "core",       "contracts",   "platform",    "manifest", "trust",
@@ -20,6 +21,7 @@ pub fn addUnitTests(
     graph: *const graph_mod.Graph,
     step: *std.Build.Step,
     coverage_root: ?[]const u8,
+    config: evidence.Config,
 ) void {
     for (specs.specs, 0..) |spec, index| {
         const unit = b.addTest(.{
@@ -27,7 +29,7 @@ pub fn addUnitTests(
             .root_module = graph.modules[index],
         });
         const dir = coverageDir(b, coverage_root, b.fmt("unit-{s}", .{spec.name}));
-        dependOnTest(b, step, unit, dir);
+        dependOnTest(b, step, unit, dir, config, .unit);
     }
 }
 
@@ -40,6 +42,7 @@ pub fn compileSuite(
 ) *std.Build.Step.Compile {
     const module = graph.root(b.fmt("tests/{s}/root.zig", .{suite}), &suite_imports);
     module.addOptions("suite_options", extra);
+    evidence.addModule(b, module);
     return b.addTest(.{ .name = b.fmt("suite-{s}", .{suite}), .root_module = module });
 }
 
@@ -49,8 +52,14 @@ pub fn addSuite(
     graph: *const graph_mod.Graph,
     suite: []const u8,
     extra: *std.Build.Step.Options,
+    config: evidence.Config,
 ) *std.Build.Step.Run {
-    return b.addRunArtifact(compileSuite(b, graph, suite, extra));
+    const identity = if (std.mem.eql(
+        u8,
+        suite,
+        "concurrency",
+    )) evidence.catalog.Suite.unit else std.meta.stringToEnum(evidence.catalog.Suite, suite).?;
+    return evidence.addRun(b, config, identity, compileSuite(b, graph, suite, extra), null);
 }
 
 /// Tests that live next to an app (CLI frontend, C ABI).
@@ -73,11 +82,12 @@ pub fn addAppTests(
     step: *std.Build.Step,
     apps: []const AppTest,
     coverage_root: ?[]const u8,
+    config: evidence.Config,
 ) void {
     for (apps) |app| {
         const exe = app.compile(b, graph);
         const dir = coverageDir(b, coverage_root, exe.name);
-        dependOnTest(b, step, exe, dir);
+        dependOnTest(b, step, exe, dir, config, .unit);
     }
 }
 
@@ -87,23 +97,10 @@ pub fn dependOnTest(
     step: *std.Build.Step,
     exe: *std.Build.Step.Compile,
     dir: ?[]const u8,
+    config: evidence.Config,
+    suite: evidence.catalog.Suite,
 ) void {
-    const coverage = dir orelse {
-        step.dependOn(&b.addRunArtifact(exe).step);
-        return;
-    };
-    const mkdir = b.addSystemCommand(&.{ "mkdir", "-p", coverage });
-    mkdir.has_side_effects = true;
-    const run = b.addSystemCommand(&.{
-        "kcov",
-        "--include-pattern=libs/|apps/|tools/|build/",
-        coverage,
-    });
-    run.addArtifactArg(exe);
-    run.setCwd(b.path("."));
-    run.has_side_effects = true;
-    run.step.dependOn(&mkdir.step);
-    step.dependOn(&run.step);
+    step.dependOn(&evidence.addRun(b, config, suite, exe, dir).step);
 }
 
 fn coverageDir(b: *std.Build, root: ?[]const u8, name: []const u8) ?[]const u8 {
@@ -140,6 +137,7 @@ pub fn addCrossTests(
         }
         const module = graph.root("tests/conformance/root.zig", &suite_imports);
         module.addOptions("suite_options", b.addOptions());
+        evidence.addModule(b, module);
         const suite = b.addTest(.{ .name = "suite-conformance", .root_module = module });
         const install = b.addInstallArtifact(suite, .{ .dest_dir = .{ .override = dir } });
         step.dependOn(&install.step);

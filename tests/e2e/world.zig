@@ -1,11 +1,12 @@
 //! One temp directory per test: a publisher (keys, builds, repository) and a user whose HOME,
 //! app-data and XDG directories all live inside it, so the real binaries never touch the
-//! developer's home. Every command and its exit code goes to `<evidence_dir>/<UTC>/<name>.txt`,
+//! developer's home files. Windows also needs a disposable OS account for HKCU registration.
+//! Every command and its exit code goes to `<evidence_dir>/<UTC>/<name>.txt`,
 //! one `<UTC>` per test process.
 
 const std = @import("std");
 const builtin = @import("builtin");
-const core = @import("core");
+const evidence = @import("test_evidence");
 const options = @import("suite_options");
 
 const io = std.testing.io;
@@ -13,20 +14,6 @@ const Dir = std.Io.Dir;
 const windows = builtin.os.tag == .windows;
 
 pub const product_id = "com.example.hello";
-
-// lint-allow(no-global-var): the test runner is single-threaded; one evidence run per process.
-var evidence_run: [32]u8 = @splat(0);
-var evidence_run_len: usize = 0;
-
-fn evidenceRun() []const u8 {
-    if (evidence_run_len == 0) {
-        var writer: std.Io.Writer = .fixed(&evidence_run);
-        const now = std.Io.Clock.real.now(io).toSeconds();
-        core.crash.writeUtc(&writer, now) catch @panic("evidence stamp exceeds 32 bytes");
-        evidence_run_len = writer.end;
-    }
-    return evidence_run[0..evidence_run_len];
-}
 
 pub const Result = struct {
     code: u8,
@@ -48,6 +35,7 @@ pub const World = struct {
     base: []const u8,
     env: std.process.Environ.Map,
     transcript: std.ArrayList(u8),
+    invocation: u32 = 0,
 
     /// `w` must stay at a fixed address; `name` names the evidence file.
     pub fn init(w: *World, name: []const u8) !void {
@@ -75,10 +63,10 @@ pub const World = struct {
         try w.env.put("PATH", if (windows) "C:\\Windows\\System32" else "/usr/bin:/bin");
         if (windows) try w.env.put("SystemRoot", "C:\\Windows");
         for ([_][]const u8{ "home", "tmp" }) |sub| try w.tmp.dir.createDirPath(io, sub);
+        try w.tmp.dir.writeFile(io, .{ .sub_path = "user-data.txt", .data = "owned by the app" });
     }
 
     pub fn deinit(w: *World) void {
-        w.writeEvidence() catch |err| std.debug.print("e2e evidence: {t}\n", .{err});
         w.arena_state.deinit();
         w.tmp.cleanup();
     }
@@ -93,18 +81,29 @@ pub const World = struct {
 
     pub fn exec(w: *World, argv: []const []const u8) !Result {
         const a = w.arena();
-        const result = try std.process.run(a, io, .{
-            .argv = argv,
-            .environ_map = &w.env,
-            .stdout_limit = .limited(4 << 20),
-            .stderr_limit = .limited(4 << 20),
-        });
-        const code: u8 = switch (result.term) {
-            .exited => |c| c,
-            else => 255,
-        };
-        try w.record(argv, code);
-        return .{ .code = code, .stdout = result.stdout, .stderr = result.stderr };
+        const result = try evidence.process.run(a, io, .{ .argv = argv, .env = &w.env });
+        w.invocation += 1;
+        const prefix = try std.fmt.allocPrint(a, "{s}-{d}", .{ w.name, w.invocation });
+        try evidence.attachment(
+            try std.fmt.allocPrint(a, "{s}.stdout.txt", .{prefix}),
+            result.stdout,
+        );
+        try evidence.attachment(
+            try std.fmt.allocPrint(a, "{s}.stderr.txt", .{prefix}),
+            result.stderr,
+        );
+        try w.record(argv, result.code);
+        try evidence.attachment(
+            try std.fmt.allocPrint(a, "{s}.argv.json", .{prefix}),
+            try std.json.Stringify.valueAlloc(
+                a,
+                .{ .argv = argv, .code = result.code, .reason = result.reason },
+                .{},
+            ),
+        );
+        try w.writeEvidence();
+        if (result.reason.len > 0 and result.code == 255) return error.SubprocessInterrupted;
+        return .{ .code = result.code, .stdout = result.stdout, .stderr = result.stderr };
     }
 
     /// Runs `argv` and fails the test, printing stderr, unless it exits with `expected`.
@@ -136,7 +135,7 @@ pub const World = struct {
 
     pub fn status(w: *World, extra: []const []const u8) !Status {
         const args = try std.mem.concat(w.arena(), []const u8, &.{
-            &.{ "status", "--json", "--product", product_id },
+            &.{ "status", "--json", "--product", product_id, "--install-dir", w.path("managed") },
             extra,
         });
         const result = try w.setup(0, args);
@@ -171,10 +170,10 @@ pub const World = struct {
     }
 
     fn writeEvidence(w: *World) !void {
-        const dir = try std.fs.path.join(w.arena(), &.{ options.evidence_dir, evidenceRun() });
-        try Dir.cwd().createDirPath(io, dir);
-        const file = try std.fmt.allocPrint(w.arena(), "{s}/{s}.txt", .{ dir, w.name });
-        try Dir.cwd().writeFile(io, .{ .sub_path = file, .data = w.transcript.items });
+        try evidence.attachment(
+            try std.fmt.allocPrint(w.arena(), "{s}.txt", .{w.name}),
+            w.transcript.items,
+        );
     }
 };
 
@@ -221,6 +220,17 @@ pub const Publisher = struct {
         });
         _ = try w.nbpack(expected, args);
         if (expected == 0) p.initialized = true;
+        const runtime_bytes = try Dir.cwd().readFileAlloc(io, runtime, a, .limited(64 << 20));
+        const docs_bytes = try w.read(docs);
+        const hashes = try std.json.Stringify.valueAlloc(a, .{
+            .version = version,
+            .sequence = sequence,
+            .runtime_sha256 = @as([]const u8, &evidence.model.digest(runtime_bytes)),
+            .docs_sha256 = @as([]const u8, &evidence.model.digest(docs_bytes)),
+        }, .{});
+        try evidence.attachment(try std.fmt.allocPrint(a, "{s}-fixture-{d}-{d}.json", .{
+            w.name, sequence, w.invocation,
+        }), hashes);
     }
 
     fn component(
@@ -233,7 +243,7 @@ pub const Publisher = struct {
         const a = w.arena();
         const out = w.path(try std.fmt.allocPrint(a, "{s}/{s}.tar.zst", .{ build, id }));
         const runtime = std.mem.eql(u8, id, "runtime");
-        const files = if (runtime) try p.runtimeFiles(build) else try example(
+        const files = if (runtime) try p.runtimeFiles(build, version) else try example(
             a,
             "components/docs/files",
         );
@@ -250,7 +260,7 @@ pub const Publisher = struct {
     }
 
     /// `<build>/runtime/bin/hello[.exe]`: the sample app binary built by `zig build`.
-    fn runtimeFiles(p: *Publisher, build: []const u8) ![]const u8 {
+    fn runtimeFiles(p: *Publisher, build: []const u8, version: []const u8) ![]const u8 {
         const w = p.w;
         const dir = w.path(try std.fmt.allocPrint(w.arena(), "{s}/runtime", .{build}));
         const bin = try std.fs.path.join(w.arena(), &.{ dir, "bin" });
@@ -258,6 +268,10 @@ pub const Publisher = struct {
         const name = if (windows) "hello.exe" else "hello";
         const dest = try std.fs.path.join(w.arena(), &.{ bin, name });
         try Dir.copyFile(Dir.cwd(), options.hello_exe, Dir.cwd(), dest, io, .{});
+        try Dir.cwd().writeFile(io, .{
+            .sub_path = try std.fs.path.join(w.arena(), &.{ bin, "release.txt" }),
+            .data = version,
+        });
         return dir;
     }
 

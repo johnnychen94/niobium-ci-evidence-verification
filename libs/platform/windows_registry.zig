@@ -73,7 +73,9 @@ const Hive = enum {
     }
 
     fn handle(hive: Hive) HKEY {
-        return @ptrFromInt(@as(usize, if (hive == .HKCU) 0x80000001 else 0x80000002));
+        // Winreg.h casts through signed LONG before ULONG_PTR, including on 64-bit hosts.
+        const value: isize = if (hive == .HKCU) -0x7fff_ffff else -0x7fff_fffe;
+        return @ptrFromInt(@as(usize, @bitCast(value)));
     }
 
     /// `HKCU\<key>` / `HKLM\<key>` as recorded in installation.json.
@@ -87,6 +89,12 @@ const Hive = enum {
         return error.PlatformIntegrationFailed;
     }
 };
+
+test "N1-AC-14 predefined registry handles match the Windows SDK signed LONG conversion" {
+    const high: usize = if (@sizeOf(usize) == 8) 0xffff_ffff_0000_0000 else 0;
+    try std.testing.expectEqual(high | 0x80000001, @intFromPtr(Hive.HKCU.handle()));
+    try std.testing.expectEqual(high | 0x80000002, @intFromPtr(Hive.HKLM.handle()));
+}
 
 fn regError(rc: i32) Error {
     return if (rc == ERROR_ACCESS_DENIED) error.FsAccessDenied else error.PlatformIntegrationFailed;

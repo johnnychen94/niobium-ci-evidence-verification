@@ -39,6 +39,7 @@
 | C ABI | [abi-v1](spec/abi-v1.md) | `api/c/distribution.h` |
 | UI IR | [ui-ir-v1](spec/ui-ir-v1.md) | `libs/ui/core` |
 | Platform contract | [platform-contract-v1](spec/platform-contract-v1.md) | `libs/conformance` |
+| Test execution and archived evidence | [test-system-v1](spec/test-system-v1.md) | `api/schema/test-report-v1.schema.json` |
 
 ## Status vocabulary
 

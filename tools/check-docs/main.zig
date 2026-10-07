@@ -16,6 +16,8 @@ pub const allowed_hosts = [_][]const u8{
     "127.0.0.1",
     "cdn.jsdelivr.net",
     "cmake.org",
+    "developers.cloudflare.com",
+    "awscli.amazonaws.com",
     "codecov.io",
     "codeload.github.com",
     "discourse.cmake.org",

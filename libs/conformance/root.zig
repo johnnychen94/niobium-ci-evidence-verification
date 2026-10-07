@@ -21,7 +21,7 @@ pub const Case = enum {
     integration_names,
 };
 
-pub const Verdict = enum { pass, unsupported, not_run };
+pub const Verdict = enum { pass, unsupported, not_run, fail };
 
 pub const Report = struct {
     verdicts: std.EnumArray(Case, Verdict) = .initFill(.not_run),
@@ -301,31 +301,57 @@ const Suite = struct {
     }
 };
 
-pub fn run(io: std.Io, arena: std.mem.Allocator, subject: Subject) Failure!Report {
+/// Runs one independent contract so callers can persist each outcome before the next probe.
+pub fn runCase(io: std.Io, arena: std.mem.Allocator, subject: Subject, case: Case) Failure!Verdict {
+    std.debug.assert(subject.base.len > 0);
     var s: Suite = .{ .io = io, .arena = arena, .subject = subject };
-    const r = &s.report.verdicts;
-    try s.createManagedFile();
-    r.set(.create_managed_file, .pass);
-    try s.atomicReplace();
-    r.set(.atomic_replace, .pass);
-    try s.pointerSwap();
-    r.set(.pointer_swap_recovery, .pass);
     const req = subject.required;
-    r.set(.shortcut, try s.integration(.shortcut, .shortcut, "Niobium Contract", req.shortcut));
-    r.set(
-        .file_association,
-        try s.integration(.file_association, .file_association, "nbcontract", req.file_association),
-    );
-    r.set(.service, try s.integration(.service, .service, "agent", req.service));
-    r.set(
-        .registration,
-        try s.integration(.registration, .registration, "dev.niobium.contract", req.registration),
-    );
-    try s.freeSpace();
-    r.set(.free_space, .pass);
-    try s.integrationNames();
-    r.set(.integration_names, .pass);
-    return s.report;
+    switch (case) {
+        .create_managed_file => try s.createManagedFile(),
+        .atomic_replace => try s.atomicReplace(),
+        .pointer_swap_recovery => try s.pointerSwap(),
+        .shortcut => return s.integration(case, .shortcut, "Niobium Contract", req.shortcut),
+        .file_association => return s.integration(
+            case,
+            .file_association,
+            "nbcontract",
+            req.file_association,
+        ),
+        .service => return s.integration(case, .service, "agent", req.service),
+        .registration => return s.integration(
+            case,
+            .registration,
+            "dev.niobium.contract",
+            req.registration,
+        ),
+        .free_space => try s.freeSpace(),
+        .integration_names => try s.integrationNames(),
+    }
+    return .pass;
+}
+
+/// On error, completed results and the failed contract remain available in `report`.
+pub fn runInto(
+    io: std.Io,
+    arena: std.mem.Allocator,
+    subject: Subject,
+    report: *Report,
+) Failure!void {
+    std.debug.assert(subject.base.len > 0);
+    report.* = .{};
+    for (std.enums.values(Case)) |case| {
+        const verdict = runCase(io, arena, subject, case) catch |err| {
+            report.verdicts.set(case, .fail);
+            return err;
+        };
+        report.verdicts.set(case, verdict);
+    }
+}
+
+pub fn run(io: std.Io, arena: std.mem.Allocator, subject: Subject) Failure!Report {
+    var report: Report = .{};
+    try runInto(io, arena, subject, &report);
+    return report;
 }
 
 test "PlatformContract: VirtualPlatform passes every case" {
@@ -346,4 +372,40 @@ test "PlatformContract: VirtualPlatform passes every case" {
     for (std.enums.values(Case)) |case| {
         try std.testing.expectEqual(Verdict.pass, report.get(case));
     }
+}
+
+test "N1-AC-14 failed required capabilities preserve partial results" {
+    var tmp = std.testing.tmpDir(.{});
+    defer tmp.cleanup();
+    var arena: std.heap.ArenaAllocator = .init(std.testing.allocator);
+    defer arena.deinit();
+    const a = arena.allocator();
+    const base = try tmp.dir.realPathFileAlloc(std.testing.io, ".", a);
+    var virtual: platform.Virtual = .init(std.testing.io, base);
+    var subject_platform = virtual.platform();
+    var table = subject_platform.vtable.*;
+    table.prepareIntegration = struct {
+        fn unavailable(
+            _: *anyopaque,
+            _: *const platform.api.IntegrationRequest,
+        ) platform.Error!void {
+            return error.CapabilityUnsupported;
+        }
+    }.unavailable;
+    subject_platform.vtable = &table;
+    var subject: Subject = .{ .platform = subject_platform, .base = base };
+    var report: Report = .{};
+    try std.testing.expectError(
+        error.ContractViolated,
+        runInto(std.testing.io, a, subject, &report),
+    );
+    try std.testing.expectEqual(Verdict.pass, report.get(.create_managed_file));
+    try std.testing.expectEqual(Verdict.pass, report.get(.pointer_swap_recovery));
+    try std.testing.expectEqual(Verdict.fail, report.get(.shortcut));
+    try std.testing.expectEqual(Verdict.not_run, report.get(.free_space));
+    subject.required.shortcut = false;
+    try std.testing.expectEqual(
+        Verdict.unsupported,
+        try runCase(std.testing.io, a, subject, .shortcut),
+    );
 }

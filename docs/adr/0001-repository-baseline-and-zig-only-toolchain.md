@@ -2,6 +2,7 @@
 
 - **Status:** Accepted
 - **Date:** 2026-10-07
+- **Amended by:** [ADR-0021](0021-ci-evidence-transport.md), CI evidence transport exception
 
 ## Context
 

@@ -4,7 +4,7 @@ Numbers are assigned once and never reused or renumbered. Template: title `# ADR
 
 | Number | Title | Status |
 |---|---|---|
-| [0001](0001-repository-baseline-and-zig-only-toolchain.md) | Repository baseline and Zig-only toolchain | Accepted |
+| [0001](0001-repository-baseline-and-zig-only-toolchain.md) | Repository baseline and Zig-only toolchain | Accepted; amended by 0021 |
 | [0002](0002-library-first-core-and-c-abi.md) | Library-first core and C ABI | Accepted |
 | [0003](0003-strict-json-manifest.md) | Strict JSON product manifest | Accepted |
 | [0004](0004-tuf-profile-v1.md) | Installer TUF profile v1 | Accepted |
@@ -24,3 +24,4 @@ Numbers are assigned once and never reused or renumbered. Template: title `# ADR
 | [0018](0018-built-in-feature-modules.md) | Built-in feature modules | Proposed |
 | [0019](0019-presets-and-themes.md) | Presets and themes | Proposed |
 | [0020](0020-distribution-delivery-milestones.md) | Distribution delivery milestones | Accepted |
+| [0021](0021-ci-evidence-transport.md) | CI evidence transport | Accepted |

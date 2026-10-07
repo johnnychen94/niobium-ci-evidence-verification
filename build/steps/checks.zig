@@ -1,6 +1,7 @@
 //! `zig build fmt|lint|check|check-docs|check-commits`. All tools are host Zig executables.
 
 const std = @import("std");
+const evidence = @import("evidence.zig");
 
 pub const source_roots = [_][]const u8{
     "apps",
@@ -15,6 +16,7 @@ pub const source_roots = [_][]const u8{
 };
 
 pub const Tools = struct {
+    evidence: *std.Build.Step.Compile,
     lint: *std.Build.Step.Compile,
     check: *std.Build.Step.Compile,
     check_docs: *std.Build.Step.Compile,
@@ -29,7 +31,15 @@ pub fn addTools(b: *std.Build, host: std.Build.ResolvedTarget) Tools {
     const module_specs = b.createModule(.{ .root_source_file = b.path("build/modules.zig") });
     const repo = b.createModule(.{ .root_source_file = b.path("tools/repo/root.zig") });
     const shared: ToolImports = .{ .module_specs = module_specs, .repo = repo };
+    const publisher = tool(b, host, "evidence", shared);
+    publisher.root_module.addImport("test_catalog", b.createModule(.{
+        .root_source_file = b.path("build/test_catalog.zig"),
+    }));
+    publisher.root_module.addImport("contracts", b.createModule(.{
+        .root_source_file = b.path("libs/contracts/root.zig"),
+    }));
     return .{
+        .evidence = publisher,
         .lint = tool(b, host, "lint", shared),
         .check = tool(b, host, "check", shared),
         .check_docs = tool(b, host, "check-docs", shared),
@@ -63,13 +73,18 @@ fn tool(
 }
 
 /// Unit tests of the tools themselves (host).
-pub fn addToolTests(b: *std.Build, tools: Tools, step: *std.Build.Step) void {
+pub fn addToolTests(
+    b: *std.Build,
+    tools: Tools,
+    step: *std.Build.Step,
+    config: evidence.Config,
+) void {
     inline for (comptime std.meta.fieldNames(Tools)) |name| {
         const exe = @field(tools, name);
         const unit = b.addTest(
             .{ .name = b.fmt("tool-{s}", .{name}), .root_module = exe.root_module },
         );
-        step.dependOn(&b.addRunArtifact(unit).step);
+        step.dependOn(&evidence.addRun(b, config, .unit, unit, null).step);
     }
 }
 

@@ -3,10 +3,12 @@
 //! witness that App Bootstrap v1 ran. Online goes through a local HTTP server; offline through a
 //! bundle with no server at all.
 
+const evidence = @import("test_evidence");
 const std = @import("std");
 const builtin = @import("builtin");
 const options = @import("suite_options");
 const world = @import("world.zig");
+const probes = @import("probes.zig");
 const Server = @import("server.zig").Server;
 
 const io = std.testing.io;
@@ -22,13 +24,19 @@ const Online = struct {
 
     fn run(o: Online, verb: []const u8, expected: u8) !void {
         _ = try o.w.setup(expected, &.{
-            verb,   "--product", product_id, "--repo",   o.repo,   "--trust-root",
-            o.root, "--scope",   "user",     "--silent", "--json",
+            verb,                "--product", product_id, "--repo",   o.repo,   "--trust-root",
+            o.root,              "--scope",   "user",     "--silent", "--json", "--install-dir",
+            o.w.path("managed"),
         });
+        try probes.userData(o.w);
     }
 };
 
 test "N1-UJ-01 N1-UJ-03 N1-UJ-04 N1-INV-06 online install, update and incident rollback" {
+    try evidence.run("online-lifecycle", onlineLifecycle);
+}
+
+fn onlineLifecycle() !void {
     var w: World = undefined;
     try w.init("online");
     defer w.deinit();
@@ -58,8 +66,11 @@ test "N1-UJ-01 N1-UJ-03 N1-UJ-04 N1-INV-06 online install, update and incident r
     try online.run("update", 0);
     status = try expectRelease(&w, "1.0.0", 3);
     try expectGreeting(&w, status.root);
-    // Already current: update succeeds without a transaction.
+    // Already current: neither the generation nor installation metadata changes.
+    const before = try w.read("managed/installation.json");
     try online.run("update", 0);
+    try std.testing.expectEqualStrings(before, try w.read("managed/installation.json"));
+    _ = try expectRelease(&w, "1.0.0", 3);
 
     try expectLines(try w.bootstrapLog(), &.{
         "activate - 1.0.0 user",
@@ -69,6 +80,10 @@ test "N1-UJ-01 N1-UJ-03 N1-UJ-04 N1-INV-06 online install, update and incident r
 }
 
 test "N1-UJ-05 N1-UJ-06 repair restores deleted and altered files; uninstall leaves nothing" {
+    try evidence.run("repair-uninstall", repairUninstall);
+}
+
+fn repairUninstall() !void {
     var w: World = undefined;
     try w.init("repair-uninstall");
     defer w.deinit();
@@ -82,20 +97,37 @@ test "N1-UJ-05 N1-UJ-06 repair restores deleted and altered files; uninstall lea
     const readme = "current/docs/share/doc/hello/README.txt";
     const original = try w.read(try join(&w, status.root, readme));
     const cwd = std.Io.Dir.cwd();
-    try cwd.deleteFile(io, try join(&w, status.root, "current/runtime/bin/hello"));
+    const hello = if (builtin.os.tag == .windows) "hello.exe" else "hello";
+    const executable = try std.fmt.allocPrint(w.arena(), "current/runtime/bin/{s}", .{hello});
+    try cwd.deleteFile(
+        io,
+        try join(
+            &w,
+            status.root,
+            executable,
+        ),
+    );
     try cwd.writeFile(io, .{ .sub_path = try join(&w, status.root, readme), .data = "tampered" });
     try local.run("repair", 0);
+    _ = try expectRelease(&w, "1.0.0", 1);
     try expectGreeting(&w, status.root);
     try std.testing.expectEqualStrings(original, try w.read(try join(&w, status.root, readme)));
 
     try local.run("uninstall", 0);
-    _ = try w.setup(12, &.{ "status", "--json", "--product", product_id });
+    _ = try w.setup(
+        12,
+        &.{ "status", "--json", "--product", product_id, "--install-dir", w.path("managed") },
+    );
     try std.testing.expectError(error.FileNotFound, cwd.access(io, status.root, .{}));
     const log = try w.bootstrapLog();
     try expectLines(log, &.{ "activate - 1.0.0 user", "deactivate 1.0.0 1.0.0 user" });
 }
 
 test "N1-UJ-07 offline bundle installs a promoted, re-signed release without a server" {
+    try evidence.run("offline-bundle", offlineBundle);
+}
+
+fn offlineBundle() !void {
     var w: World = undefined;
     try w.init("offline");
     defer w.deinit();
@@ -117,11 +149,57 @@ test "N1-UJ-07 offline bundle installs a promoted, re-signed release without a s
     _ = try w.nbpack(0, &.{ "sign", "--repo", repo, "--keys", keys, "--timestamp-days", "365" });
     try std.testing.expectEqual(before + 1, try timestampVersion(&w));
 
+    const bundled = try makeBundle(&w);
+    const config = bundled.config;
+    const bundle = bundled.bundle;
+    const setup = try join(&w, bundle, std.fs.path.basename(options.setup_exe));
+    _ = try w.expectExit(
+        0,
+        &.{
+            setup,
+            "install",
+            "--config",
+            config,
+            "--scope",
+            "user",
+            "--silent",
+            "--json",
+            "--install-dir",
+            w.path("managed"),
+        },
+    );
+    const status = try expectRelease(&w, "1.1.0", 2);
+    try expectGreeting(&w, status.root);
+    _ = try w.expectExit(
+        0,
+        &.{
+            setup,
+            "uninstall",
+            "--config",
+            config,
+            "--silent",
+            "--json",
+            "--install-dir",
+            w.path("managed"),
+        },
+    );
+    try probes.userData(&w);
+    try std.testing.expectError(
+        error.FileNotFound,
+        std.Io.Dir.cwd().access(io, w.path("managed"), .{}),
+    );
+    try expectLines(
+        try w.bootstrapLog(),
+        &.{ "activate - 1.1.0 user", "deactivate 1.1.0 1.1.0 user" },
+    );
+}
+
+fn makeBundle(w: *World) !struct { config: []const u8, bundle: []const u8 } {
     const config = w.path("product-config.json");
     _ = try w.nbpack(0, &.{
         "config",
         "--repo",
-        repo,
+        w.path("repo"),
         "--product",
         "examples/hello/product.json",
         "--branding",
@@ -132,20 +210,45 @@ test "N1-UJ-07 offline bundle installs a promoted, re-signed release without a s
     const bundle = w.path("bundle");
     _ = try w.nbpack(
         0,
-        &.{ "bundle", "--repo", repo, "--setup", options.setup_exe, "--out", bundle },
+        &.{ "bundle", "--repo", w.path("repo"), "--setup", options.setup_exe, "--out", bundle },
     );
-    const setup = try join(&w, bundle, std.fs.path.basename(options.setup_exe));
-    _ = try w.expectExit(
-        0,
-        &.{ setup, "install", "--config", config, "--scope", "user", "--silent", "--json" },
+    return .{ .config = config, .bundle = bundle };
+}
+
+test "N1-INV-05 artifact tampering is rejected before deployment" {
+    try evidence.run("artifact-tampering", artifactTampering);
+}
+
+fn artifactTampering() !void {
+    var w: World = undefined;
+    try w.init("tampering");
+    defer w.deinit();
+    var p: Publisher = .{ .w = &w };
+    try p.keygen();
+    try p.release("1.0.0", 1, "stable");
+    const runtime = try std.Io.Dir.cwd().readFileAlloc(
+        io,
+        w.path("build-1/runtime.tar.zst"),
+        w.arena(),
+        .limited(64 << 20),
     );
-    const status = try expectRelease(&w, "1.1.0", 2);
-    try expectGreeting(&w, status.root);
-    _ = try w.expectExit(0, &.{ setup, "uninstall", "--config", config, "--silent", "--json" });
-    try expectLines(
-        try w.bootstrapLog(),
-        &.{ "activate - 1.1.0 user", "deactivate 1.1.0 1.1.0 user" },
+    const target = w.path(try std.fmt.allocPrint(w.arena(), "repo/targets/{s}", .{
+        evidence.model.digest(runtime),
+    }));
+    try std.Io.Dir.cwd().writeFile(io, .{ .sub_path = target, .data = "tampered artifact" });
+    const result = try w.exec(try w.command(options.setup_exe, &.{
+        "install",      "--product",     product_id,        "--repo", w.path("repo"),
+        "--trust-root", p.trustRoot(),   "--scope",         "user",   "--silent",
+        "--json",       "--install-dir", w.path("managed"),
+    }));
+    try std.testing.expectEqual(@as(u8, 3), result.code);
+    const rejection = std.mem.find(u8, result.stdout, "\"code\":\"validation.length_mismatch\"");
+    try std.testing.expect(rejection != null);
+    try std.testing.expectError(
+        error.FileNotFound,
+        std.Io.Dir.cwd().access(io, w.path("managed/installation.json"), .{}),
     );
+    try probes.userData(&w);
 }
 
 /// `nbpack promote` of release `sequence` to stable, expecting exit `expected`.
@@ -171,6 +274,8 @@ fn expectRelease(w: *World, version: []const u8, sequence: u64) !world.Status {
     const status = try w.status(&.{});
     try std.testing.expectEqualStrings(version, status.version);
     try std.testing.expectEqual(sequence, status.release_sequence);
+    try std.testing.expectEqualStrings(w.path("managed"), status.root);
+    try probes.installed(w, version, sequence);
     return status;
 }
 

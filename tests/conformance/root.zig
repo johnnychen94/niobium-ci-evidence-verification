@@ -3,6 +3,7 @@
 //! touches the real home, registry or service manager. vm-smoke runs the same binary on
 //! Windows 11 and Ubuntu (zig-out/cross-tests/<target>/suite-conformance).
 
+const evidence = @import("test_evidence");
 const std = @import("std");
 const builtin = @import("builtin");
 const conformance = @import("conformance");
@@ -70,6 +71,8 @@ fn expectReport(report: conformance.Report, req: conformance.Required) !void {
 }
 
 fn runHost(scope: contracts.Scope) !void {
+    const id = if (scope == .user) "host-user" else "host-machine";
+    if (!try evidence.selected(id)) return error.SkipZigTest;
     var f: Fixture = try .init();
     defer f.deinit();
     var host: platform.Host = .init(std.testing.io, .{
@@ -78,12 +81,39 @@ fn runHost(scope: contracts.Scope) !void {
         .system_managers = false,
     });
     const req = required();
-    const report = try conformance.run(std.testing.io, f.arena.allocator(), .{
+    const subject: conformance.Subject = .{
         .platform = host.platform(),
         .base = try f.join("work"),
         .scope = scope,
         .required = req,
-    });
+    };
+    var report: conformance.Report = .{};
+    var failed = false;
+    for (std.enums.values(conformance.Case)) |case| {
+        const started = evidence.now();
+        try evidence.record(id, @tagName(case), .NOT_RUN, "InProgress", started);
+        const verdict = conformance.runCase(
+            std.testing.io,
+            f.arena.allocator(),
+            subject,
+            case,
+        ) catch |err| {
+            failed = true;
+            report.verdicts.set(case, .fail);
+            try evidence.record(id, @tagName(case), .FAIL, @errorName(err), started);
+            continue;
+        };
+        report.verdicts.set(case, verdict);
+        const unsupported = verdict == .unsupported;
+        try evidence.record(
+            id,
+            @tagName(case),
+            if (unsupported) .NOT_RUN else .PASS,
+            if (unsupported) "OptionalCapabilityUnsupported" else "",
+            started,
+        );
+    }
+    if (failed) return error.ConformanceFailed;
     try expectReport(report, req);
 }
 

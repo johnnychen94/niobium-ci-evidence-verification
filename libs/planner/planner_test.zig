@@ -101,7 +101,7 @@ test "N1-AC-05 install on macOS: stages in order, associations left to the bundl
     try std.testing.expect(!p.ops[2].prepare_integration.privileged);
 }
 
-test "install on Windows machine scope: associations, services and registration, privileged" {
+test "N1-AC-05 Windows integrations use portable targets and machine privileges" {
     var arena: std.heap.ArenaAllocator = .init(std.testing.allocator);
     defer arena.deinit();
     const a = arena.allocator();
@@ -113,8 +113,12 @@ test "install on Windows machine scope: associations, services and registration,
         .prepare_integration => |i| {
             kinds[@backingInt(i.kind)] += 1;
             try std.testing.expect(i.privileged);
+            try std.testing.expectEqualStrings(
+                i.target,
+                try @import("platform").names.target(i.target),
+            );
             if (i.kind == .registration) {
-                try std.testing.expectEqualStrings("maintainer\\setup.exe", i.target);
+                try std.testing.expectEqualStrings("maintainer/setup.exe", i.target);
             }
         },
         else => {},

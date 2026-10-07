@@ -49,3 +49,28 @@ Outstanding maintainer task: host the upstream files from `deps.zon` on a self-h
 | External compatibility lab | Maintainer only | Source v0.2, section 2 |
 | TLA+ model | Maintainer only | [ADR-0012](adr/0012-formal-methods-deferred.md) |
 | ZLint / zlinter integration | Maintainer only | [tooling-and-rules](development/tooling-and-rules.md) |
+
+## Test-system construction
+
+The [test-system specification](spec/test-system-v1.md) owns the contract. This table tracks
+construction, separately from execution verdicts. `supported` means repeatable evidence for the
+named scope; `working` means implementation has gaps with exit criteria; `not yet supported`
+means planned with prerequisites; `not planned` means deliberately excluded. Target assignments
+remain in [Platform support](../apps/user-docs/src/content/docs/platforms.md); tier obligations
+remain in [ADR-0014](adr/0014-tier-based-platform-support.md).
+
+| Capability | Applicable environments | Acceptance IDs | Construction | Remaining work / exit criteria | Evidence |
+|---|---|---|---|---|---|
+| Parameterized execution, compatibility aliases | macOS local catalog; hosted Ubuntu/Windows/macOS unit/conformance/e2e | N1-AC-20 | supported | Current runs remain required; other native suite/target combinations need their own evidence | [Validation](acceptance-plan-v0.1.md#test-system-validation-2026-10-07) |
+| Structured reports and bounded capture | Same hosts; suite aggregates and conformance/e2e cases | N1-AC-20 | working | Native case/attachment validation passed; publisher-enriched fork provenance still needs deployed CI evidence | [Validation](acceptance-plan-v0.1.md#test-system-validation-2026-10-07) |
+| Independent lifecycle probes | Hosted Ubuntu/Windows/macOS, user scope; disposable Windows account | N1-UJ-01, N1-UJ-03, N1-UJ-04, N1-UJ-05, N1-UJ-06, N1-UJ-07, N1-INV-05, N1-INV-06 | supported | Current run required; native elevation/desktop excluded from this scope | [Validation](acceptance-plan-v0.1.md#test-system-validation-2026-10-07) |
+| Platform contract | Hosted Ubuntu/Windows/macOS, redirected user/machine roots | N1-AC-14 | supported | Current run required; registry/service-manager exclusions remain explicit NOT_RUN contracts | [Validation](acceptance-plan-v0.1.md#test-system-validation-2026-10-07) |
+| Fault simulation and corpus replay | VirtualPlatform on native hosts | N1-AC-07, N1-INV-05 | working | macOS 2,000-seed replay and corpus passed; hosted evidence remains | [Local validation](acceptance-plan-v0.1.md#test-system-validation-2026-10-07) |
+| Native continuous fuzz | Zig native protocol on macOS/Linux | N1-INV-02, N1-INV-05 | working | Resolve missing sanitizer symbols during zstd fuzz rebuild on macOS; exploration has no archive verdict | [Local validation](acceptance-plan-v0.1.md#test-system-validation-2026-10-07) |
+| Durable R2 history | Trusted Ubuntu publisher | N1-AC-20 | working | Private US bucket, scoped credentials and live protocol/configuration checks passed; trusted default-branch and fork publication remain | [Deployment validation](acceptance-plan-v0.1.md#r2-deployment-validation-2026-10-08) |
+| GUI automation and visual services | Future reference desktops | N1-UJ-10 | not yet supported | Desktop drivers and accessibility bridges; software golden remains separate | [UI lanes](development/testing-lanes.md#ui-golden) |
+| Native permissions/elevation | Reference OS in the platform strategy | N1-UJ-02, N1-AC-18, N1-AC-19 | not yet supported | Real elevation, service managers and reference OS; redirected conformance cannot close these | [VM runbook](runbooks/vm-smoke.md) |
+| Final signed release verification | Released Tier 1 targets | N1-AC-20 | not yet supported | Signing inputs, tests of final bytes and retained release bundles | [Signing runbook](runbooks/release-signing.md) |
+| Container and VM orchestration | Future isolated Linux / reference OS | N1-AC-20 | not yet supported | Separate execution project; existing explicit vm-smoke retained | [VM runbook](runbooks/vm-smoke.md) |
+| Results viewer | Archive readers | N1-AC-20 | not yet supported | Separate task; paginated object protocol supplies history | [Archive contract](spec/test-system-v1.md#report-and-archive) |
+| Database, mutable latest index, custom S3 signing | Archive | N1-AC-20 | not planned | Immutable object listing and pinned transport cover the current need | [ADR-0021](adr/0021-ci-evidence-transport.md) |

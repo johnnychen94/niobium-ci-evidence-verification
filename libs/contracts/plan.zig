@@ -22,6 +22,7 @@ pub const Integration = struct {
     label: []const u8,
     /// Executable path relative to `current/` (`<component>/<entrypoint path>`); for
     /// `registration` it is the maintainer executable relative to the install root.
+    /// Uses forward slashes on every OS; the platform backend renders native separators.
     target: []const u8,
     start: ?manifest.ServiceStart = null,
     /// Machine scope integrations go through the privilege helper.

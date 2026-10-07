@@ -73,7 +73,7 @@ pub const Local = struct {
     pub fn setPointer(l: Local, link: []const u8, target: []const u8) Error!void {
         var buffer: [std.fs.max_path_bytes]u8 = undefined; // SAFETY: written by bufPrint.
         const next = std.fmt.bufPrint(&buffer, "{s}.next", .{link}) catch return error.FsIo;
-        try l.deleteFile(next);
+        try l.deletePointer(next);
         const flags: Dir.SymLinkFlags = .{ .is_directory = true };
         cwd().symLink(l.io, target, next, flags) catch |err| return api.mapFs(err);
         try l.rename(next, link);
@@ -129,7 +129,10 @@ test "local atomic write, append, pointer swap" {
     try std.testing.expect(try readPointer(io, a, link) == null);
     try l.setPointer(link, "versions/1");
     try l.setPointer(link, "versions/2");
-    try std.testing.expectEqualStrings("versions/2", (try readPointer(io, a, link)).?);
+    try std.testing.expectEqualStrings(
+        "versions" ++ std.fs.path.sep_str ++ "2",
+        (try readPointer(io, a, link)).?,
+    );
     try l.deletePointer(link);
     try l.deletePointer(link);
     try std.testing.expect(try readPointer(io, a, link) == null);

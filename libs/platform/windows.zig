@@ -173,10 +173,27 @@ extern "kernel32" fn DeviceIoControl(
 const FSCTL_SET_REPARSE_POINT: u32 = 0x000900A4;
 const IO_REPARSE_TAG_MOUNT_POINT: u32 = 0xA0000003;
 
+/// Absolute DOS/UNC name without a namespace prefix, ready for Win32 or NT prefixing.
+fn namespaceName(arena: Allocator, path: []const u8) Error![]const u8 {
+    if (!std.fs.path.isAbsoluteWindows(path) or std.mem.findScalar(u8, path, 0) != null)
+        return error.PlatformIntegrationFailed;
+    const normalized = try arena.dupe(u8, path);
+    std.mem.replaceScalar(u8, normalized, '/', '\\');
+    if (std.mem.cutPrefix(u8, normalized, "\\\\?\\")) |body| return body;
+    if (std.mem.cutPrefix(u8, normalized, "\\\\")) |body|
+        return std.fmt.allocPrint(arena, "UNC\\{s}", .{body});
+    return normalized;
+}
+
 /// REPARSE_DATA_BUFFER for a mount point: `\??\<abs>` substitute name, `<abs>` print name.
 pub fn junctionData(arena: Allocator, absolute: []const u8) Error![]const u8 {
-    const print = try wideOf(arena, absolute);
-    const substitute = try wideOf(arena, try std.fmt.allocPrint(arena, "\\??\\{s}", .{absolute}));
+    const name = try namespaceName(arena, absolute);
+    const display = if (std.mem.cutPrefix(u8, name, "UNC\\")) |body|
+        try std.fmt.allocPrint(arena, "\\\\{s}", .{body})
+    else
+        name;
+    const print = try wideOf(arena, display);
+    const substitute = try wideOf(arena, try std.fmt.allocPrint(arena, "\\??\\{s}", .{name}));
     const names_len = (substitute.len + 1 + print.len + 1) * 2;
     var out: std.Io.Writer.Allocating = .init(arena);
     const w = &out.writer;
@@ -202,7 +219,9 @@ pub fn junctionData(arena: Allocator, absolute: []const u8) Error![]const u8 {
 
 fn makeJunction(arena: Allocator, path: []const u8, absolute: []const u8) Error!void {
     const data = try junctionData(arena, absolute);
-    const prefixed = try wideZ(arena, try std.fmt.allocPrint(arena, "\\\\?\\{s}", .{path}));
+    const prefixed = try wideZ(arena, try std.fmt.allocPrint(arena, "\\\\?\\{s}", .{
+        try namespaceName(arena, path),
+    }));
     const generic_write: u32 = 0x40000000;
     const open_existing: u32 = 3;
     const backup_semantics: u32 = 0x02000000;
@@ -369,10 +388,24 @@ test "shell link layout" {
     try std.testing.expect(std.mem.find(u8, bytes, probe[0 .. lnk_owner.len * 2]) != null);
 }
 
-test "junction reparse buffer" {
+test "N1-AC-14 junction reparse buffer normalizes Windows path forms" {
     var arena: std.heap.ArenaAllocator = .init(std.testing.allocator);
     defer arena.deinit();
     const data = try junctionData(arena.allocator(), "C:\\p\\versions\\2");
+    try std.testing.expectEqualSlices(
+        u8,
+        data,
+        try junctionData(arena.allocator(), "C:/p\\versions/2"),
+    );
+    try std.testing.expectEqualSlices(
+        u8,
+        data,
+        try junctionData(arena.allocator(), "\\\\?\\C:/p/versions/2"),
+    );
+    try std.testing.expectEqualStrings(
+        "UNC\\server\\share\\p",
+        try namespaceName(arena.allocator(), "\\\\server/share/p"),
+    );
     try std.testing.expectEqual(
         IO_REPARSE_TAG_MOUNT_POINT,
         std.mem.readInt(u32, data[0..4], .little),
