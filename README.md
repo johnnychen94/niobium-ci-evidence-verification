@@ -53,6 +53,7 @@ zig-out/example/setup status --json
 | 🚧 4 | Easier to adopt: prebuilt downloads and a stable build API |
 | 🚧 5 | More system integrations: `myapp://` links, `PATH` and environment variables |
 | 🚧 6 | In-app updates for any application, Electron and Node.js first |
+| 🔜 | Online, offline-file and SFX delivery |
 | 🔜 | "What's new" release notes, signed with the release |
 | 🔜 | Start at login |
 | 🔜 | Key rotation from `nbpack` |
@@ -63,7 +64,6 @@ zig-out/example/setup status --json
 | 🗓️ | More platforms: Windows on ARM, Kylin, UOS |
 | ⛔ | Install scripts, custom actions, plugins and runtime extensions |
 | ⛔ | Running arbitrary commands with administrator rights |
-| ⛔ | A single-file self-extracting installer |
 | ⛔ | A native Wayland backend |
 
 What each feature means for you, and why the ⛔ items are left out: [Roadmap](apps/user-docs/src/content/docs/roadmap.md).

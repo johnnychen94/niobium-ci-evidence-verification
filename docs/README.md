@@ -22,6 +22,7 @@
 | UI component lifecycle | [ui-component-lifecycle](development/ui-component-lifecycle.md) |
 | Commit conventions | [commits](development/commits.md) |
 | Using Niobium from another repository (build API) | [consuming](development/consuming.md) |
+| Online, offline-file and SFX design and verification tasks | [distribution backlog](development/distribution-backlog.md), [ADR-0020](adr/0020-distribution-delivery-milestones.md) |
 | Release signing, key rotation, offline bundles, VM smoke | [runbooks/](runbooks/) |
 
 ## Specifications (normative)

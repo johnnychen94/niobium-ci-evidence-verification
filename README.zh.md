@@ -53,6 +53,7 @@ zig-out/example/setup status --json
 | 🚧 4 | 更容易上手：预构建的下载包和稳定的构建 API |
 | 🚧 5 | 更多系统集成：`myapp://` 链接、`PATH` 和环境变量 |
 | 🚧 6 | 适用于任何应用的应用内更新，首先提供 Electron 和 Node.js |
+| 🔜 | 在线、完整离线文件和 SFX 分发 |
 | 🔜 | 与发布一起签名的“新功能说明” |
 | 🔜 | 登录时启动 |
 | 🔜 | 通过 `nbpack` 轮换密钥 |
@@ -63,7 +64,6 @@ zig-out/example/setup status --json
 | 🗓️ | 更多平台：ARM 版 Windows、麒麟、统信 |
 | ⛔ | 安装脚本、自定义动作、插件和运行时扩展 |
 | ⛔ | 以管理员权限运行任意命令 |
-| ⛔ | 单文件自解压安装程序 |
 | ⛔ | 原生 Wayland 后端 |
 
 每项功能对你意味着什么、为什么不做 ⛔ 项：[路线图](apps/user-docs/src/content/docs/zh/roadmap.md)。

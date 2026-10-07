@@ -31,6 +31,7 @@ description: Niobium 现在能做什么、正在开发什么、接下来做什�
 | 🚧 4 | 更容易上手 | 预构建的 `setup`、`nbpack` 和 `libdistribution`，以及构建 API 的兼容性承诺。无需安装 Zig 就能试用 Niobium，升级时也不必重写你的构建 |
 | 🚧 5 | 更多系统集成 | 从 `myapp://` 链接打开你的应用，把命令行工具加入 `PATH`，设置环境变量；卸载时全部干净移除，而且无需安装脚本 |
 | 🚧 6 | 适用于任何应用的应用内更新 | 你的应用使用与 `setup` 相同的签名和事务自行更新。首先提供 Electron 和 Node.js 包；其他语言调用 C ABI，并提供示例 |
+| 🔜 | 在线、完整离线文件和 SFX 分发 | 三个里程碑：已签名的在线安装程序、安装前先打开或解包的完整离线文件，以及无需单独解包步骤的自解压离线安装程序（SFX）。平台格式和验证仍属计划（[分发决策](https://github.com/niobium-project/niobium/blob/main/docs/adr/0020-distribution-delivery-milestones.md)） |
 | 🔜 | 新功能说明 | 发布说明显示在安装程序和你应用的更新提示中，并与发布一起签名，因此无法被替换 |
 | 🔜 | 登录时启动 | 你的应用注册为在用户登录时启动，无需脚本或手动步骤 |
 | 🔜 | 通过 `nbpack` 轮换密钥 | 替换丢失或过期的签名密钥，而不会破坏已有安装；客户端已经接受轮换后的密钥（[签名与密钥管理](/zh/guides/sign-and-keys/#rotate-or-recover-keys)） |
@@ -42,7 +43,6 @@ description: Niobium 现在能做什么、正在开发什么、接下来做什�
 | ⛔ | 安装脚本和自定义动作 | 清单是数据。数据库迁移这类产品特有的工作通过 [App Bootstrap](/zh/concepts/app-bootstrap/) 在你的应用中运行 |
 | ⛔ | 第三方插件和运行时扩展 | 功能模块内置在 Niobium 中，并随 Niobium 一起审查；`setup` 不加载任何其他东西 |
 | ⛔ | 以管理员权限运行任意命令 | 提权助手只接受一组固定的、带类型的操作（[权限边界](/zh/concepts/privilege/)） |
-| ⛔ | 单文件自解压安装程序 | 自解压可执行文件经常被杀毒软件标记。在线安装使用小巧的 `setup`，离线安装使用离线包目录 |
 | ⛔ | 原生 Wayland 后端 | 在 Wayland 上，安装程序窗口通过 XWayland 运行（[平台支持](/zh/platforms/#not-planned)） |
 
 功能模块是 Niobium 本身的一部分：你仍然以数据描述你的产品，安装时不会加载 Niobium 之外的任何东西。标记为 ⛔ 的内容是有意不做的，这样安装才能保持可预期、可审计。

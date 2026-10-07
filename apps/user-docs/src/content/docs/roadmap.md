@@ -31,6 +31,7 @@ The roadmap says what is planned, not what works. Whether a feature has been ver
 | 🚧 4 | Easier to adopt | Prebuilt `setup`, `nbpack` and `libdistribution`, and a compatibility promise for the build API. You can try Niobium without installing Zig and upgrade it without rewriting your build |
 | 🚧 5 | More system integrations | Open your application from `myapp://` links, add a command-line tool to `PATH`, and set environment variables, all removed cleanly on uninstall and without install scripts |
 | 🚧 6 | In-app updates for any application | Your application updates itself with the same signatures and transactions as `setup`. An Electron and Node.js package comes first; other languages call the C ABI, with examples |
+| 🔜 | Online, offline-file and SFX delivery | Three milestones: a signed online installer, one complete offline file opened or unpacked before installation, and a self-extracting offline installer (SFX) requiring no separate unpacking step. Platform formats and verification remain planned ([delivery decision](https://github.com/niobium-project/niobium/blob/main/docs/adr/0020-distribution-delivery-milestones.md)) |
 | 🔜 | What's new | Release notes in the installer and in your application's update prompt, signed together with the release so they cannot be swapped |
 | 🔜 | Start at login | Your application registers to start when the user signs in, with no script or manual step |
 | 🔜 | Key rotation from `nbpack` | Replace a lost or expired signing key without breaking existing installations; clients already accept rotated keys ([Sign and manage keys](/guides/sign-and-keys/#rotate-or-recover-keys)) |
@@ -42,7 +43,6 @@ The roadmap says what is planned, not what works. Whether a feature has been ver
 | ⛔ | Install scripts and custom actions | The manifest is data. Product-specific work such as a database migration runs in your application through [App Bootstrap](/concepts/app-bootstrap/) |
 | ⛔ | Third-party plugins and runtime extensions | Feature modules are built into Niobium and reviewed with it; `setup` loads nothing else |
 | ⛔ | Running arbitrary commands with administrator rights | The elevated helper accepts only a fixed set of typed operations ([Privilege](/concepts/privilege/)) |
-| ⛔ | A single-file self-extracting installer | Self-extracting executables are often flagged by antivirus software. Online installs use the small `setup`, and offline installs use a bundle directory |
 | ⛔ | A native Wayland backend | On Wayland the installer window runs through XWayland ([Platform support](/platforms/#not-planned)) |
 
 Feature modules are part of Niobium itself: you still describe your product as data, and nothing outside Niobium is loaded at install time. The items marked ⛔ are left out so that installs stay predictable and auditable.

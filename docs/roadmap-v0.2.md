@@ -14,6 +14,7 @@ The user-facing wording of each item is owned by the [Roadmap](../apps/user-docs
 | Easier to adopt | Prebuilt `setup`, `nbpack` and `libdistribution` for the Tier 1 targets, built once and signed once; a compatibility promise for the build API | ADR to be written |
 | More system integrations | ProtocolHandler and EnvironmentEntry (including `PATH`) as feature modules, with removal on uninstall and conformance cases on every Tier 1 backend | ADR-0018, [platform-contract-v1](spec/platform-contract-v1.md), source v0.1 section 7 |
 | In-app updates for any application | The Node-API package `distribution.node` over the existing engine; examples of the C ABI from other languages | [ADR-0002](adr/0002-library-first-core-and-c-abi.md), [abi-v1](spec/abi-v1.md) |
+| Online, offline-file and SFX delivery | Three delivery milestones with a shared engine; settle container layouts, final signing, antivirus gates, resource budgets, offline validity and maintainer lifetime | [ADR-0020](adr/0020-distribution-delivery-milestones.md), [distribution backlog](development/distribution-backlog.md) |
 
 ## Carried forward from v0.1
 
