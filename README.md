@@ -70,7 +70,7 @@ What each feature means for you, and why the ⛔ items are left out: [Roadmap](a
 
 ## Background
 
-Niobium is a hobby project that the author works on while employed at TongYuan. It is not part of TongYuan's commercial products; it exists to support creating installers for TongYuan products, whether internal, experimental or commercial. TongYuan gives the project no direct support or steering, so maintenance is best effort and the platform list is kept short on purpose: see [About the project](apps/user-docs/src/content/docs/about.md) and [Platform support](apps/user-docs/src/content/docs/platforms.md).
+Niobium is an independent open source installer framework, maintained by its author in spare time. It grew out of installer needs encountered while working at TongYuan and is designed as a general-purpose framework. The project is maintained independently, without direct support or direction from TongYuan. Maintenance is best effort, with a focused platform scope: see [About the project](apps/user-docs/src/content/docs/about.md) and [Platform support](apps/user-docs/src/content/docs/platforms.md).
 
 ## Documentation
 

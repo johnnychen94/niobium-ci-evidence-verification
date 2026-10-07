@@ -3,15 +3,13 @@ title: About the project
 description: Why Niobium exists, who maintains it, and what support to expect.
 ---
 
-Niobium is a hobby project maintained by one person, with no company support behind it. Expect best-effort maintenance, a deliberately narrow scope and a short platform list.
+Niobium is an independent open source installer framework maintained by one person in spare time. Maintenance is best effort, with a focused scope and a short platform list.
 
 ## Background
 
-The author builds Niobium as a hobby project while working at TongYuan. Niobium is not part of TongYuan's commercial products.
+The project grew out of installer needs the author encountered while working at TongYuan, including internal, experimental and commercial products. Niobium is a general-purpose framework with no product-specific dependencies.
 
-The project exists to support creating installers for TongYuan products, whether internal, experimental or commercial. It is published as a general-purpose framework, and nothing in it is specific to those products.
-
-TongYuan gives the project no direct support or steering, and there are no resources to support many platforms well.
+Niobium is maintained independently and is not part of TongYuan's commercial products. TongYuan provides no direct support or direction for the project.
 
 ## Maintenance strategy
 

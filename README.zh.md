@@ -70,7 +70,7 @@ zig-out/example/setup status --json
 
 ## 背景
 
-Niobium 是作者在同元软控工作期间开发的业余项目。它不属于同元软控的商业产品，诞生的目的是为同元软控的产品（内部、实验性或商业产品）制作安装程序提供支持。同元软控不对本项目提供直接支持或方向指导，因此维护以尽力而为为原则，支持的平台也刻意保持精简：参见 [About the project](apps/user-docs/src/content/docs/about.md) 与 [Platform support](apps/user-docs/src/content/docs/platforms.md)。
+Niobium 是一个独立的开源安装程序框架，由作者利用业余时间维护。它源于作者在同元软控工作时遇到的安装程序需求，并以通用框架为设计目标。本项目独立维护，不受同元软控的直接支持或方向指导。维护以尽力而为为原则，平台范围保持精简：参见 [About the project](apps/user-docs/src/content/docs/about.md) 与 [Platform support](apps/user-docs/src/content/docs/platforms.md)。
 
 ## 文档
 
